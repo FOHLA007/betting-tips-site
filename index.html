@@ -3,160 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin VIP Tips</title>
+<title>FohlaWin LIVE Tips</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #0f0f0f;
-  color: #fff;
-}
-
-/* HEADER */
-header {
-  background: linear-gradient(45deg, #ff3b3b, #ff8c00);
-  padding: 20px;
-  text-align: center;
-}
-
-header h1 {
-  margin: 0;
-}
-
-/* CONTAINER */
-.container {
-  padding: 15px;
-}
-
-/* CARDS */
-.card {
-  background: #1c1c1c;
-  padding: 15px;
-  margin: 15px 0;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.4);
-}
-
-.card h3 {
-  color: #f5c542;
-}
-
-/* WIN / LOSS */
-.win {
-  color: #00ff88;
-  font-weight: bold;
-}
-
-.loss {
-  color: #ff4d4d;
-  font-weight: bold;
-}
-
-/* MATCH BOX */
-.match {
-  border-left: 4px solid #f5c542;
-  padding-left: 10px;
-  margin-bottom: 10px;
-}
-
-/* VIP SECTION */
-.vip {
-  border: 2px solid #ff3b3b;
-}
-
-.vip-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  background: linear-gradient(45deg, #ff3b3b, #ff8c00);
-  color: white;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 15px;
-  font-size: 12px;
-  color: #aaa;
-}
+body {font-family:Arial;margin:0;background:#0f0f0f;color:white;}
+header {background:linear-gradient(45deg,#ff3b3b,#ff8c00);padding:20px;text-align:center;}
+.container {padding:15px;}
+.card {background:#1c1c1c;padding:15px;margin:15px 0;border-radius:12px;}
+.match {border-left:4px solid #f5c542;padding-left:10px;margin:10px 0;}
+.win {color:#00ff88;font-weight:bold;}
+.vip {border:2px solid #ff3b3b;padding:15px;border-radius:12px;}
+.vip-btn {width:100%;padding:12px;border:none;border-radius:8px;font-weight:bold;background:linear-gradient(45deg,#ff3b3b,#ff8c00);color:white;}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🔥 FohlaWin VIP Tips</h1>
-  <p>Daily Football Predictions & Analysis</p>
+<h1>🔥 LIVE Betting Tips</h1>
+<p>Updated Automatically</p>
 </header>
 
 <div class="container">
 
-  <!-- PERFORMANCE -->
-  <div class="card">
-    <h3>📊 Performance</h3>
-    <p class="win">✔️ Yesterday: 4/5 Won</p>
-    <p class="win">✔️ Last Week: 18/22 Won</p>
-    <p>🔥 Win Rate: 81%</p>
-  </div>
+<div class="card">
+<h3>📊 Performance</h3>
+<p class="win">Win Rate: 82%</p>
+</div>
 
-  <!-- MATCHES -->
-  <div class="card">
-    <h3>⚽ Today's Matches</h3>
+<div class="card">
+<h3>⚽ Live Matches</h3>
+<div id="matches">Loading...</div>
+</div>
 
-    <div class="match">
-      <p><b>Arsenal vs Chelsea</b></p>
-      <p>Tip: Arsenal Win</p>
-      <p class="win">Confidence: 80%</p>
-    </div>
-
-    <div class="match">
-      <p><b>Liverpool vs Man United</b></p>
-      <p>Tip: Over 2.5 Goals</p>
-      <p class="win">Confidence: 75%</p>
-    </div>
-
-    <!-- ADD NEW MATCHES HERE -->
-  </div>
-
-  <!-- RESULTS -->
-  <div class="card">
-    <h3>📈 Results</h3>
-    <p class="win">✔️ Arsenal vs Chelsea — WON</p>
-    <p class="loss">❌ Liverpool vs City — LOST</p>
-    <p>More results updated daily</p>
-  </div>
-
-  <!-- VIP -->
-  <div class="card vip">
-    <h3>💎 VIP ACCESS (LIMITED)</h3>
-    <p>⚠️ Only 20 VIP spots available per week</p>
-    <p>💰 Fee: R50 per week</p>
-    <p>📲 Instant WhatsApp access after payment</p>
-
-    <a href="https://wa.me/27821234567" target="_blank">
-      <button class="vip-btn">
-        JOIN VIP NOW 🔥
-      </button>
-    </a>
-  </div>
-
-  <!-- TESTIMONIALS -->
-  <div class="card">
-    <h3>💬 Testimonials</h3>
-    <p>"I made R1,200 in 2 days 🔥"</p>
-    <p>"Best predictions I've seen online"</p>
-    <p>"VIP is worth every cent"</p>
-  </div>
+<div class="card vip">
+<h3>💎 VIP ACCESS</h3>
+<a href="https://wa.me/27821234567">
+<button class="vip-btn">JOIN VIP 🔥</button>
+</a>
+</div>
 
 </div>
 
-<footer>
-  © 2026 FohlaWin VIP Tips | Responsible Gambling Only
-</footer>
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "bettingtips-9ea67.firebaseapp.com",
+  databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/",
+  projectId: "bettingtips-9ea67"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const matchesRef = ref(db, "matches");
+
+onValue(matchesRef, (snapshot) => {
+  const data = snapshot.val();
+  let html = "";
+
+  for (let id in data) {
+    let m = data[id];
+
+    html += `
+      <div class="match">
+        <b>${m.home} vs ${m.away}</b>
+        <p>Tip: ${m.tip}</p>
+        <p class="win">Confidence: ${m.confidence}</p>
+        <p>Status: ${m.result}</p>
+      </div>
+    `;
+  }
+
+  document.getElementById("matches").innerHTML = html;
+});
+</script>
 
 </body>
 </html>
