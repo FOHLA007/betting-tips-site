@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+</head>
+
+<body style="font-family:Arial;background:#111;color:white;padding:20px;">
+
+<h2>🔥 Admin Panel</h2>
+
+<input id="home" placeholder="Home Team"><br><br>
+<input id="away" placeholder="Away Team"><br><br>
+<input id="tip" placeholder="Tip"><br><br>
+<input id="conf" placeholder="Confidence"><br><br>
+
+<button onclick="addMatch()">Add Match</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "bettingtips-9ea67.firebaseapp.com",
+  databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/",
+  projectId: "bettingtips-9ea67"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.addMatch = function () {
+  push(ref(db, "matches"), {
+    home: home.value,
+    away: away.value,
+    tip: tip.value,
+    confidence: conf.value,
+    result: "pending"
+  });
+
+  alert("Match Added!");
+};
+</script>
+
+</body>
+</html>
