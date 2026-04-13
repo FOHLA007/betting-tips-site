@@ -3,41 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin Live</title>
+<title>FohlaWin VIP Betting</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: Poppins;
-  background: #0b0f1a;
-  color: white;
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#0b0f1a;
+  color:white;
 }
 
-header {
-  background: linear-gradient(135deg,#ffb400,#ff3b3b);
-  padding: 20px;
-  text-align: center;
+header{
+  background:linear-gradient(135deg,#ffb400,#ff3b3b);
+  padding:20px;
+  text-align:center;
 }
 
-.container {
-  padding: 15px;
+.container{padding:15px;}
+
+.card{
+  background:#121a2a;
+  padding:15px;
+  margin:10px 0;
+  border-radius:12px;
 }
 
-.card {
-  background: #121a2a;
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 12px;
+.match{
+  border-left:4px solid #ffb400;
+  padding:10px;
+  margin:10px 0;
+  background:#0f1726;
+  border-radius:8px;
 }
 
-.match {
-  border-left: 4px solid #ffb400;
-  padding: 10px;
-  margin: 10px 0;
-  background: #0f1726;
-  border-radius: 8px;
+.vip{
+  border:2px solid gold;
+}
+
+.vip-btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  background:linear-gradient(135deg,#25D366,#128C7E);
+  color:white;
+  font-weight:bold;
+  border-radius:10px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -45,20 +58,30 @@ header {
 <body>
 
 <header>
-<h2>🔥 FohlaWin Live Matches</h2>
-<p>Real-time updates</p>
+<h2>🔥 FohlaWin VIP Betting</h2>
+<p>Live Matches + Premium Tips</p>
 </header>
 
 <div class="container">
 
+<!-- VIP -->
+<div class="card vip">
+<h3>💰 VIP Subscription</h3>
+<p>Get daily winning tips via WhatsApp</p>
+
+<a href="https://wa.me/27821234567?text=Hi%20I%20want%20VIP%20subscription">
+<button class="vip-btn">JOIN VIP ON WHATSAPP</button>
+</a>
+</div>
+
+<!-- MATCHES -->
 <div class="card">
-<h3>⚽ Matches</h3>
-<div id="matches">Loading matches...</div>
+<h3>⚽ Live Matches</h3>
+<div id="matches">Loading...</div>
 </div>
 
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -71,48 +94,50 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const container = document.getElementById("matches");
-
 const today = new Date().toISOString().split("T")[0];
 
-// 🔥 ONLY ONE FIXED PATH (THIS IS THE KEY)
 const matchesRef = ref(db, "matches/" + today);
+const tipsRef = ref(db, "tips/" + today);
 
-let loaded = false;
+let matches = {};
+let tips = {};
 
-// fallback if Firebase fails
-setTimeout(() => {
-  if (!loaded) {
-    container.innerHTML = "<p>No matches found today</p>";
-  }
-}, 5000);
+onValue(matchesRef, (snap) => {
+  matches = snap.val() || {};
+  render();
+});
 
-// listen to matches
-onValue(matchesRef, (snapshot) => {
+onValue(tipsRef, (snap) => {
+  tips = snap.val() || {};
+  render();
+});
 
-  loaded = true;
-
-  const data = snapshot.val();
-
-  if (!data) {
-    container.innerHTML = "<p>No matches available today</p>";
-    return;
-  }
+function render(){
 
   let html = "";
 
-  Object.values(data).forEach(m => {
+  Object.values(matches).forEach(m => {
+
+    const key = (m.home + "_" + m.away).replaceAll(" ","_");
+    const tip = tips[key];
 
     html += `
       <div class="match">
-        <b>${m.home || "Team A"} vs ${m.away || "Team B"}</b>
+        <b>${m.home} vs ${m.away}</b>
         <p>Score: ${m.score || "0-0"}</p>
         <p>Status: ${m.status || "pending"}</p>
+
+        ${
+          tip
+          ? "<p>🔥 VIP TIP AVAILABLE</p>"
+          : "<p>🔒 VIP ONLY</p>"
+        }
       </div>
     `;
   });
 
-  container.innerHTML = html;
-});
+  container.innerHTML = html || "<p>No matches today</p>";
+}
 </script>
 
 </body>
