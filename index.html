@@ -36,16 +36,6 @@ header {
   margin: 10px 0;
 }
 
-.win {
-  color: #00ff88;
-  font-weight: bold;
-}
-
-.loss {
-  color: #ff4d4d;
-  font-weight: bold;
-}
-
 .vip {
   border: 2px solid #ff3b3b;
   padding: 15px;
@@ -68,27 +58,18 @@ header {
 
 <header>
 <h1>🔥 LIVE Betting Tips</h1>
-<p>Updated Automatically</p>
+<p>Auto Updated Matches</p>
 </header>
 
 <div class="container">
 
-  <!-- PERFORMANCE -->
-  <div class="card">
-    <h3>📊 Performance</h3>
-    <p class="win">Win Rate: 82%</p>
-  </div>
-
-  <!-- LIVE MATCHES -->
   <div class="card">
     <h3>⚽ Live Matches</h3>
     <div id="matches">Loading matches...</div>
   </div>
 
-  <!-- VIP -->
   <div class="card vip">
     <h3>💎 VIP ACCESS</h3>
-    <p>Join VIP for exclusive tips</p>
     <a href="https://wa.me/27821234567">
       <button class="vip-btn">JOIN VIP 🔥</button>
     </a>
@@ -97,7 +78,6 @@ header {
 </div>
 
 <!-- FIREBASE SCRIPT -->
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -109,7 +89,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// IMPORTANT: must match your Replit data date
+// MUST match Replit date format
 const today = new Date().toISOString().split("T")[0];
 
 const matchesRef = ref(db, "matches/" + today);
@@ -141,6 +121,7 @@ onValue(matchesRef, (snapshot) => {
 
   document.getElementById("matches").innerHTML = html;
 });
-  </script>
+</script>
+
 </body>
-  </html>
+</html>
