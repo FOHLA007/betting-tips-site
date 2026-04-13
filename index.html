@@ -3,101 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin VIP Tips</title>
+<title>FohlaWin VIP Live</title>
 
-<!-- PREMIUM FONT -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   background: #0b0f1a;
-  color: #ffffff;
+  color: white;
 }
 
-/* HEADER */
 header {
-  background: linear-gradient(135deg, #ffb400, #ff3b3b);
-  padding: 25px;
+  background: linear-gradient(135deg,#ffb400,#ff3b3b);
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
-header h1 {
-  margin: 0;
-  font-size: 28px;
-}
-
-header p {
-  margin: 5px 0 0;
-  opacity: 0.9;
-}
-
-/* CONTAINER */
 .container {
   padding: 20px;
-  max-width: 900px;
-  margin: auto;
 }
 
-/* CARD STYLE */
 .card {
   background: #121a2a;
-  padding: 18px;
+  padding: 15px;
   margin: 15px 0;
-  border-radius: 14px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  border-radius: 12px;
 }
 
-/* MATCH BOX */
 .match {
   border-left: 4px solid #ffb400;
-  padding: 10px 12px;
+  padding: 10px;
   margin: 10px 0;
   background: #0f1726;
   border-radius: 8px;
 }
 
-/* VIP */
 .vip {
   border: 2px solid #ffb400;
 }
 
-/* BUTTON */
 .vip-btn {
   width: 100%;
   padding: 12px;
+  background: linear-gradient(135deg,#ffb400,#ff3b3b);
   border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  background: linear-gradient(135deg, #ffb400, #ff3b3b);
   color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.vip-btn:hover {
-  transform: scale(1.02);
-}
-
-/* INPUT */
-input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-}
-
-/* FOOTER */
-footer {
-  text-align: center;
-  padding: 20px;
-  margin-top: 30px;
-  font-size: 13px;
-  color: #aaa;
+  font-weight: bold;
+  border-radius: 10px;
 }
 </style>
 </head>
@@ -105,47 +59,29 @@ footer {
 <body>
 
 <header>
-<h1>🔥 FohlaWin VIP Tips</h1>
-<p>Premium Football Predictions • Updated Daily</p>
+<h1>🔥 FohlaWin VIP Live</h1>
+<p>Real-Time Matches & Premium Tips</p>
 </header>
 
 <div class="container">
 
-  <!-- VIP PAYMENT -->
+  <!-- VIP -->
   <div class="card vip">
-    <h3>💎 VIP ACCESS</h3>
-    <p>🔥 Daily Winning Tips</p>
-    <p>💰 Price: R50 per week</p>
+    <h3>💰 VIP Subscription</h3>
+    <p>Access premium tips & predictions</p>
 
-    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20VIP%20access%20for%20FohlaWin">
-      <button class="vip-btn">JOIN VIP ON WHATSAPP 🔥</button>
+    <a href="https://wa.me/27821234567?text=I%20want%20VIP%20subscription">
+      <button class="vip-btn">SUBSCRIBE ON WHATSAPP</button>
     </a>
-  </div>
-
-  <!-- VIP LOGIN -->
-  <div class="card">
-    <h3>🔐 VIP LOGIN</h3>
-    <input type="password" id="vipPassword" placeholder="Enter VIP Password">
-    <button class="vip-btn" onclick="loginVIP()">UNLOCK VIP</button>
   </div>
 
   <!-- MATCHES -->
   <div class="card">
     <h3>⚽ Live Matches</h3>
-    <div id="matches">Loading matches...</div>
+    <div id="matches">Loading...</div>
   </div>
 
 </div>
-
-<!-- FOOTER -->
-<footer>
-  © <span id="year"></span> FohlaWin VIP Tips • All Rights Reserved
-</footer>
-
-<!-- YEAR SCRIPT -->
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
-</script>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -163,83 +99,58 @@ const today = new Date().toISOString().split("T")[0];
 
 const matchesRef = ref(db, "matches/" + today);
 const tipsRef = ref(db, "tips/" + today);
+const usersRef = ref(db, "users/default");
 
-let matchesData = {};
-let tipsData = {};
+let matches = {};
+let tips = {};
+let user = {};
 
-let isVIP = localStorage.getItem("vip") === "true";
-
-// VIP LOGIN
-window.loginVIP = function () {
-  const pass = document.getElementById("vipPassword").value;
-
-  if (pass === "FOHLA123") {
-    localStorage.setItem("vip", "true");
-    alert("VIP Unlocked 🔥");
-    location.reload();
-  } else {
-    alert("Wrong Password ❌");
-  }
-};
-
-// LOAD MATCHES
-onValue(matchesRef, (snapshot) => {
-  matchesData = snapshot.val() || {};
+onValue(usersRef, (snap) => {
+  user = snap.val() || {};
   render();
 });
 
-// LOAD TIPS
-onValue(tipsRef, (snapshot) => {
-  tipsData = snapshot.val() || {};
+onValue(matchesRef, (snap) => {
+  matches = snap.val() || {};
   render();
 });
 
-// RENDER
+onValue(tipsRef, (snap) => {
+  tips = snap.val() || {};
+  render();
+});
+
 function render() {
 
-  const container = document.getElementById("matches");
-
-  if (!matchesData || Object.keys(matchesData).length === 0) {
-    container.innerHTML = "<p>No matches today</p>";
-    return;
-  }
+  const isVIP = user.vip === true && new Date(user.expiry) > new Date();
 
   let html = "";
 
-  Object.values(matchesData).forEach((m) => {
+  Object.values(matches).forEach(m => {
 
-    const home = m.home || "Unknown";
-    const away = m.away || "Unknown";
+    const key = (m.home || "") + "_vs_" + (m.away || "");
 
-    const key = home.replaceAll(" ", "_") + "_vs_" + away.replaceAll(" ", "_");
-    const tip = tipsData[key];
+    const tip = tips[key.replaceAll(" ", "_")];
 
     html += `
       <div class="match">
-        <b>${home} vs ${away}</b>
+        <b>${m.home} vs ${m.away}</b>
+        <p>Score: ${m.score || "0-0"}</p>
+        <p>Status: ${m.status || "pending"}</p>
 
         ${
           isVIP
-          ? (tip
-              ? `
-                <p>🔥 Tip: ${tip.tip}</p>
-                <p>📊 Confidence: ${tip.confidence}</p>
-              `
-              : `<p>🔒 No Tip Yet</p>`
-            )
-          : `<p>🔒 VIP ONLY</p>`
+          ? (tip ? `<p>🔥 Tip: ${tip.tip}</p>` : `<p>🔒 No tip</p>`)
+          : `<p>🔒 VIP REQUIRED</p>`
         }
 
-        <p>Status: ${m.status || "pending"}</p>
       </div>
     `;
   });
 
-  container.innerHTML = html;
+  document.getElementById("matches").innerHTML = h tml;
 }
 </script>
 
 </body>
 </html>
-
- 
