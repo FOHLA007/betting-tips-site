@@ -5,58 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FohlaWin VIP Tips</title>
 
+<!-- PREMIUM FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
 body {
-  font-family: Arial;
   margin: 0;
-  background: #0f0f0f;
-  color: white;
+  font-family: 'Poppins', sans-serif;
+  background: #0b0f1a;
+  color: #ffffff;
 }
 
+/* HEADER */
 header {
-  background: linear-gradient(45deg,#ff3b3b,#ff8c00);
-  padding: 20px;
+  background: linear-gradient(135deg, #ffb400, #ff3b3b);
+  padding: 25px;
   text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+header p {
+  margin: 5px 0 0;
+  opacity: 0.9;
+}
+
+/* CONTAINER */
 .container {
-  padding: 15px;
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
 }
 
+/* CARD STYLE */
 .card {
-  background: #1c1c1c;
-  padding: 15px;
+  background: #121a2a;
+  padding: 18px;
   margin: 15px 0;
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
 }
 
+/* MATCH BOX */
 .match {
-  border-left: 4px solid #f5c542;
-  padding-left: 10px;
+  border-left: 4px solid #ffb400;
+  padding: 10px 12px;
   margin: 10px 0;
+  background: #0f1726;
+  border-radius: 8px;
 }
 
+/* VIP */
 .vip {
-  border: 2px solid #ff3b3b;
+  border: 2px solid #ffb400;
 }
 
+/* BUTTON */
 .vip-btn {
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: bold;
-  background: linear-gradient(45deg,#ff3b3b,#ff8c00);
+  background: linear-gradient(135deg, #ffb400, #ff3b3b);
   color: white;
   cursor: pointer;
+  transition: 0.3s;
 }
 
+.vip-btn:hover {
+  transform: scale(1.02);
+}
+
+/* INPUT */
 input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
+  outline: none;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 20px;
+  margin-top: 30px;
+  font-size: 13px;
+  color: #aaa;
 }
 </style>
 </head>
@@ -65,7 +106,7 @@ input {
 
 <header>
 <h1>🔥 FohlaWin VIP Tips</h1>
-<p>Daily Winning Predictions</p>
+<p>Premium Football Predictions • Updated Daily</p>
 </header>
 
 <div class="container">
@@ -76,7 +117,7 @@ input {
     <p>🔥 Daily Winning Tips</p>
     <p>💰 Price: R50 per week</p>
 
-    <a href="https://wa.me/27821234567?text=Hi%20I%20want%20VIP%20access%20for%20FohlaWin.%20How%20do%20I%20pay%3F">
+    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20VIP%20access%20for%20FohlaWin">
       <button class="vip-btn">JOIN VIP ON WHATSAPP 🔥</button>
     </a>
   </div>
@@ -95,6 +136,16 @@ input {
   </div>
 
 </div>
+
+<!-- FOOTER -->
+<footer>
+  © <span id="year"></span> FohlaWin VIP Tips • All Rights Reserved
+</footer>
+
+<!-- YEAR SCRIPT -->
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
 <!-- FIREBASE -->
 <script type="module">
@@ -143,7 +194,7 @@ onValue(tipsRef, (snapshot) => {
   render();
 });
 
-// RENDER FUNCTION
+// RENDER
 function render() {
 
   const container = document.getElementById("matches");
@@ -191,4 +242,4 @@ function render() {
 </body>
 </html>
 
-
+ 
