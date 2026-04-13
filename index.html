@@ -71,7 +71,16 @@ input {
 
 <div class="container">
 
-  <!-- LOGIN -->
+  <!-- PAYMENT INSTRUCTIONS -->
+  <div class="card">
+    <h3>💳 How to Get VIP</h3>
+    <p>1️⃣ Click JOIN VIP</p>
+    <p>2️⃣ Pay R50 via eWallet / EFT</p>
+    <p>3️⃣ Send proof on WhatsApp</p>
+    <p>4️⃣ Receive VIP password 🔓</p>
+  </div>
+
+  <!-- VIP LOGIN -->
   <div class="card vip">
     <h3>🔐 VIP LOGIN</h3>
     <input type="password" id="vipPassword" placeholder="Enter VIP Password">
@@ -84,19 +93,20 @@ input {
     <div id="matches">Loading matches...</div>
   </div>
 
-  <!-- VIP CTA -->
+  <!-- VIP PAYMENT -->
   <div class="card vip">
     <h3>💎 VIP ACCESS</h3>
     <p>🔥 Daily Sure Tips</p>
-    <p>💰 High Winning Rate</p>
+    <p>💰 Price: R50/week</p>
 
-    <a href="https://wa.me/27655775885">
+    <a href="https://wa.me/27821234567?text=Hi%20I%20want%20VIP%20access%20for%20FohlaWin.%20How%20do%20I%20pay%3F">
       <button class="vip-btn">JOIN VIP NOW 🔥</button>
     </a>
   </div>
 
 </div>
 
+<!-- FIREBASE + VIP SYSTEM -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -108,16 +118,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// TODAY DATE
 const today = new Date().toISOString().split("T")[0];
+
+// DB REF
 const matchesRef = ref(db, "matches/" + today);
 
-// 🔐 CHECK VIP STATUS
+// VIP CHECK
 let isVIP = localStorage.getItem("vip") === "true";
 
+// LOGIN FUNCTION
 window.loginVIP = function () {
   const password = document.getElementById("vipPassword").value;
 
-  if (password === "32083") { // 🔥 CHANGE THIS PASSWORD
+  if (password === "FOHLA123") { // 🔥 CHANGE THIS PASSWORD
     localStorage.setItem("vip", "true");
     alert("VIP Unlocked 🔥");
     location.reload();
@@ -126,6 +140,7 @@ window.loginVIP = function () {
   }
 };
 
+// DISPLAY MATCHES
 onValue(matchesRef, (snapshot) => {
   const data = snapshot.val();
   let html = "";
