@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin LIVE Tips</title>
+<title>FohlaWin VIP Tips</title>
 
 <style>
 body {
@@ -38,8 +38,7 @@ header {
 
 .vip {
   border: 2px solid #ff3b3b;
-  padding: 15px;
-  border-radius: 12px;
+  text-align: center;
 }
 
 .vip-btn {
@@ -50,6 +49,15 @@ header {
   font-weight: bold;
   background: linear-gradient(45deg,#ff3b3b,#ff8c00);
   color: white;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
 }
 </style>
 </head>
@@ -57,27 +65,38 @@ header {
 <body>
 
 <header>
-<h1>🔥 LIVE Betting Tips</h1>
-<p>Auto Updated Matches</p>
+<h1>🔥 FohlaWin VIP Tips</h1>
+<p>Daily Winning Predictions</p>
 </header>
 
 <div class="container">
 
+  <!-- LOGIN -->
+  <div class="card vip">
+    <h3>🔐 VIP LOGIN</h3>
+    <input type="password" id="vipPassword" placeholder="Enter VIP Password">
+    <button class="vip-btn" onclick="loginVIP()">UNLOCK VIP 🔓</button>
+  </div>
+
+  <!-- MATCHES -->
   <div class="card">
     <h3>⚽ Live Matches</h3>
     <div id="matches">Loading matches...</div>
   </div>
 
+  <!-- VIP CTA -->
   <div class="card vip">
     <h3>💎 VIP ACCESS</h3>
-    <a href="https://wa.me/27821234567">
-      <button class="vip-btn">JOIN VIP 🔥</button>
+    <p>🔥 Daily Sure Tips</p>
+    <p>💰 High Winning Rate</p>
+
+    <a href="https://wa.me/27655775885">
+      <button class="vip-btn">JOIN VIP NOW 🔥</button>
     </a>
   </div>
 
 </div>
 
-<!-- FIREBASE SCRIPT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -89,10 +108,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// MUST match Replit date format
 const today = new Date().toISOString().split("T")[0];
-
 const matchesRef = ref(db, "matches/" + today);
+
+// 🔐 CHECK VIP STATUS
+let isVIP = localStorage.getItem("vip") === "true";
+
+window.loginVIP = function () {
+  const password = document.getElementById("vipPassword").value;
+
+  if (password === "32083") { // 🔥 CHANGE THIS PASSWORD
+    localStorage.setItem("vip", "true");
+    alert("VIP Unlocked 🔥");
+    location.reload();
+  } else {
+    alert("Wrong Password ❌");
+  }
+};
 
 onValue(matchesRef, (snapshot) => {
   const data = snapshot.val();
@@ -105,30 +137,25 @@ onValue(matchesRef, (snapshot) => {
 
   Object.values(data).forEach((m) => {
 
-    // SAFE FIELD HANDLING (FIXES UNKNOWN / UNDEFINED)
-    const home =
-      m?.home ||
-      m?.homeTeam ||
-      m?.home_team ||
-      m?.team1 ||
-      m?.homeTeam?.name ||
-      "Unknown";
-
-    const away =
-      m?.away ||
-      m?.awayTeam ||
-      m?.away_team ||
-      m?.team2 ||
-      m?.awayTeam?.name ||
-      "Unknown";
-
-    const score = m?.score || "N/A";
-    const status = m?.status || "pending";
+    const home = m.home || "Unknown";
+    const away = m.away || "Unknown";
+    const status = m.status || "pending";
 
     html += `
       <div class="match">
         <b>${home} vs ${away}</b>
-        <p>Score: ${score}</p>
+
+        ${
+          isVIP
+          ? `
+            <p>🔥 Tip: ${m.tip || "No tip yet"}</p>
+            <p>📊 Confidence: ${m.confidence || "80%"}</p>
+          `
+          : `
+            <p>🔒 VIP ONLY TIP</p>
+          `
+        }
+
         <p>Status: ${status}</p>
       </div>
     `;
