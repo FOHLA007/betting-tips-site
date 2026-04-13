@@ -105,8 +105,23 @@ onValue(matchesRef, (snapshot) => {
 
   Object.values(data).forEach((m) => {
 
-    const home = m?.home || m?.homeTeam || "Unknown";
-    const away = m?.away || m?.awayTeam || "Unknown";
+    // SAFE FIELD HANDLING (FIXES UNKNOWN / UNDEFINED)
+    const home =
+      m?.home ||
+      m?.homeTeam ||
+      m?.home_team ||
+      m?.team1 ||
+      m?.homeTeam?.name ||
+      "Unknown";
+
+    const away =
+      m?.away ||
+      m?.awayTeam ||
+      m?.away_team ||
+      m?.team2 ||
+      m?.awayTeam?.name ||
+      "Unknown";
+
     const score = m?.score || "N/A";
     const status = m?.status || "pending";
 
