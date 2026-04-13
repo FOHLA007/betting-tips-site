@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin VIP Tips</title>
+<title>FohlaWin Live Tips</title>
 
 <style>
 body {
@@ -35,78 +35,26 @@ header {
   padding-left: 10px;
   margin: 10px 0;
 }
-
-.vip {
-  border: 2px solid #ff3b3b;
-  text-align: center;
-}
-
-.vip-btn {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  background: linear-gradient(45deg,#ff3b3b,#ff8c00);
-  color: white;
-  margin-top: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-  border: none;
-}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🔥 FohlaWin VIP Tips</h1>
-<p>Daily Winning Predictions</p>
+<h1>🔥 Live Betting Tips</h1>
+<p>Auto Updated Matches</p>
 </header>
 
 <div class="container">
 
-  <!-- PAYMENT INSTRUCTIONS -->
   <div class="card">
-    <h3>💳 How to Get VIP</h3>
-    <p>1️⃣ Click JOIN VIP</p>
-    <p>2️⃣ Pay R50 via eWallet / EFT</p>
-    <p>3️⃣ Send proof on WhatsApp</p>
-    <p>4️⃣ Receive VIP password 🔓</p>
-  </div>
-
-  <!-- VIP LOGIN -->
-  <div class="card vip">
-    <h3>🔐 VIP LOGIN</h3>
-    <input type="password" id="vipPassword" placeholder="Enter VIP Password">
-    <button class="vip-btn" onclick="loginVIP()">UNLOCK VIP 🔓</button>
-  </div>
-
-  <!-- MATCHES -->
-  <div class="card">
-    <h3>⚽ Live Matches</h3>
-    <div id="matches">Loading matches...</div>
-  </div>
-
-  <!-- VIP PAYMENT -->
-  <div class="card vip">
-    <h3>💎 VIP ACCESS</h3>
-    <p>🔥 Daily Sure Tips</p>
-    <p>💰 Price: R50/week</p>
-
-    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20VIP%20access%20for%20FohlaWin.%20How%20do%20I%20pay%3F">
-      <button class="vip-btn">JOIN VIP NOW 🔥</button>
-    </a>
+    <h3>⚽ Today's Matches</h3>
+    <div id="matches">Loading...</div>
   </div>
 
 </div>
 
-<!-- FIREBASE + VIP SYSTEM -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -118,67 +66,54 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// TODAY DATE
 const today = new Date().toISOString().split("T")[0];
 
-// DB REF
 const matchesRef = ref(db, "matches/" + today);
+const tipsRef = ref(db, "tips/" + today);
 
-// VIP CHECK
-let isVIP = localStorage.getItem("vip") === "true";
+let matches = {};
+let tips = {};
 
-// LOGIN FUNCTION
-window.loginVIP = function () {
-  const password = document.getElementById("vipPassword").value;
-
-  if (password === "FOHLA123") { // 🔥 CHANGE THIS PASSWORD
-    localStorage.setItem("vip", "true");
-    alert("VIP Unlocked 🔥");
-    location.reload();
-  } else {
-    alert("Wrong Password ❌");
-  }
-};
-
-// DISPLAY MATCHES
 onValue(matchesRef, (snapshot) => {
-  const data = snapshot.val();
+  matches = snapshot.val() || {};
+  render();
+});
+
+onValue(tipsRef, (snapshot) => {
+  tips = snapshot.val() || {};
+  render();
+});
+
+function render() {
   let html = "";
 
-  if (!data) {
-    document.getElementById("matches").innerHTML = "<p>No matches today</p>";
-    return;
-  }
+  Object.values(matches).forEach((m) => {
 
-  Object.values(data).forEach((m) => {
+    const key = (m.home || "").replaceAll(" ", "_") + "_vs_" + (m.away || "").replaceAll(" ", "_");
 
-    const home = m.home || "Unknown";
-    const away = m.away || "Unknown";
-    const status = m.status || "pending";
+    const tip = tips[key];
 
     html += `
       <div class="match">
-        <b>${home} vs ${away}</b>
+        <b>${m.home || "Unknown"} vs ${m.away || "Unknown"}</b>
 
         ${
-          isVIP
+          tip
           ? `
-            <p>🔥 Tip: ${m.tip || "No tip yet"}</p>
-            <p>📊 Confidence: ${m.confidence || "80%"}</p>
+            <p>🔥 Tip: ${tip.tip}</p>
+            <p>📊 Confidence: ${tip.confidence}</p>
           `
-          : `
-            <p>🔒 VIP ONLY TIP</p>
-          `
+          : `<p>🔒 No Tip Yet</p>`
         }
 
-        <p>Status: ${status}</p>
+        <p>Status: ${m.status || "pending"}</p>
       </div>
     `;
   });
 
   document.getElementById("matches").innerHTML = html;
-});
-</script>
+}
+< /script>
 
 </body>
 </html>
