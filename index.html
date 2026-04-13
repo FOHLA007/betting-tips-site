@@ -123,14 +123,22 @@ onValue(matchesRef, (snapshot) => {
     html = "<p>No matches today</p>";
   } else {
     Object.values(data).forEach((m) => {
-      html += `
-        <div class="match">
-          <b>${m.home} vs ${m.away}</b>
-          <p>Score: ${m.score}</p>
-          <p>Status: ${m.status}</p>
-        </div>
-      `;
-    });
+
+  const home = m.homeTeam?.name || m.home || "Team A";
+  const away = m.awayTeam?.name || m.away || "Team B";
+  const score = m.score?.fullTime
+    ? (m.score.fullTime.home ?? 0) + "-" + (m.score.fullTime.away ?? 0)
+    : (m.score || "N/A");
+  const status = m.status || "pending";
+
+  html += `
+    <div class="match">
+      <b>${home} vs ${away}</b>
+      <p>Score: ${score}</p>
+      <p>Status: ${status}</p>
+    </div>
+  `;
+});
   }
 
   document.getElementById("matches").innerHTML = html;
