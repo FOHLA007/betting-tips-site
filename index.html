@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin Live Tips</title>
+<title>FohlaWin VIP Tips</title>
 
 <style>
 body {
@@ -35,26 +35,68 @@ header {
   padding-left: 10px;
   margin: 10px 0;
 }
+
+.vip {
+  border: 2px solid #ff3b3b;
+}
+
+.vip-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  background: linear-gradient(45deg,#ff3b3b,#ff8c00);
+  color: white;
+  cursor: pointer;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🔥 Live Betting Tips</h1>
-<p>Auto Updated Matches</p>
+<h1>🔥 FohlaWin VIP Tips</h1>
+<p>Daily Winning Predictions</p>
 </header>
 
 <div class="container">
 
+  <!-- VIP PAYMENT -->
+  <div class="card vip">
+    <h3>💎 VIP ACCESS</h3>
+    <p>🔥 Daily Winning Tips</p>
+    <p>💰 Price: R50 per week</p>
+
+    <a href="https://wa.me/27821234567?text=Hi%20I%20want%20VIP%20access%20for%20FohlaWin.%20How%20do%20I%20pay%3F">
+      <button class="vip-btn">JOIN VIP ON WHATSAPP 🔥</button>
+    </a>
+  </div>
+
+  <!-- VIP LOGIN -->
   <div class="card">
-    <h3>⚽ Today's Matches</h3>
+    <h3>🔐 VIP LOGIN</h3>
+    <input type="password" id="vipPassword" placeholder="Enter VIP Password">
+    <button class="vip-btn" onclick="loginVIP()">UNLOCK VIP</button>
+  </div>
+
+  <!-- MATCHES -->
+  <div class="card">
+    <h3>⚽ Live Matches</h3>
     <div id="matches">Loading matches...</div>
   </div>
 
 </div>
 
-<!-- FIREBASE SCRIPT -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -71,10 +113,23 @@ const today = new Date().toISOString().split("T")[0];
 const matchesRef = ref(db, "matches/" + today);
 const tipsRef = ref(db, "tips/" + today);
 
-let matchesData = null;
-let tipsData = null;
+let matchesData = {};
+let tipsData = {};
 
-const container = document.getElementById("matches");
+let isVIP = localStorage.getItem("vip") === "true";
+
+// VIP LOGIN
+window.loginVIP = function () {
+  const pass = document.getElementById("vipPassword").value;
+
+  if (pass === "FOHLA123") {
+    localStorage.setItem("vip", "true");
+    alert("VIP Unlocked 🔥");
+    location.reload();
+  } else {
+    alert("Wrong Password ❌");
+  }
+};
 
 // LOAD MATCHES
 onValue(matchesRef, (snapshot) => {
@@ -88,57 +143,50 @@ onValue(tipsRef, (snapshot) => {
   render();
 });
 
-// SAFE RENDER FUNCTION
+// RENDER FUNCTION
 function render() {
 
-  // prevent infinite loading
-  if (!matchesData) {
-    container.innerHTML = "<p>No matches found today</p>";
+  const container = document.getElementById("matches");
+
+  if (!matchesData || Object.keys(matchesData).length === 0) {
+    container.innerHTML = "<p>No matches today</p>";
     return;
   }
 
   let html = "";
-  let hasData = false;
 
   Object.values(matchesData).forEach((m) => {
 
-    if (!m) return;
-
-    hasData = true;
-
     const home = m.home || "Unknown";
     const away = m.away || "Unknown";
-    const status = m.status || "pending";
 
     const key = home.replaceAll(" ", "_") + "_vs_" + away.replaceAll(" ", "_");
-    const tip = tipsData ? tipsData[key] : null;
+    const tip = tipsData[key];
 
     html += `
       <div class="match">
         <b>${home} vs ${away}</b>
 
         ${
-          tip
-          ? `
-            <p>🔥 Tip: ${tip.tip}</p>
-            <p>📊 Confidence: ${tip.confidence}</p>
-          `
-          : `<p>🔒 No Tip Yet</p>`
+          isVIP
+          ? (tip
+              ? `
+                <p>🔥 Tip: ${tip.tip}</p>
+                <p>📊 Confidence: ${tip.confidence}</p>
+              `
+              : `<p>🔒 No Tip Yet</p>`
+            )
+          : `<p>🔒 VIP ONLY</p>`
         }
 
-        <p>Status: ${status}</p>
+        <p>Status: ${m.status || "pending"}</p>
       </div>
     `;
   });
-
-  if (!hasData) {
-    container.innerHTML = "<p>No matches available</p>";
-    return;
-  }
 
   container.innerHTML = html;
 }
 </script>
 
 </body>
-</html>
+                      </html>
