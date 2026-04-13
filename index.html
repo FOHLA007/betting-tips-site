@@ -97,22 +97,21 @@ header {
 </div>
 
 <!-- FIREBASE SCRIPT -->
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "0f8f230eb554439eb149cff85bee2975",
-  authDomain: "bettingtips-9ea67.firebaseapp.com",
-  databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/",
-  projectId: "bettingtips-9ea67"
+  databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 👉 MUST MATCH YOUR REPLIT STRUCTURE
+// IMPORTANT: must match your Replit data date
 const today = new Date().toISOString().split("T")[0];
+
 const matchesRef = ref(db, "matches/" + today);
 
 onValue(matchesRef, (snapshot) => {
@@ -120,23 +119,28 @@ onValue(matchesRef, (snapshot) => {
   let html = "";
 
   if (!data) {
-    html = "<p>No matches today</p>";
-  } else {
- Object.values(data).forEach((m) => {
-
-  html += `
-    <div class="match">
-      <b>${m.home} vs ${m.away}</b>
-      <p>Score: ${m.score}</p>
-      <p>Status: ${m.status}</p>
-    </div>
-  `;
-});
+    document.getElementById("matches").innerHTML = "<p>No matches today</p>";
+    return;
   }
+
+  Object.values(data).forEach((m) => {
+
+    const home = m?.home || m?.homeTeam || "Unknown";
+    const away = m?.away || m?.awayTeam || "Unknown";
+    const score = m?.score || "N/A";
+    const status = m?.status || "pending";
+
+    html += `
+      <div class="match">
+        <b>${home} vs ${away}</b>
+        <p>Score: ${score}</p>
+        <p>Status: ${status}</p>
+      </div>
+    `;
+  });
 
   document.getElementById("matches").innerHTML = html;
 });
-</script>
-
+  </script>
 </body>
   </html>
