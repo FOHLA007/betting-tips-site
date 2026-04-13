@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin Live</title>
+<title>FohlaWin Live VIP</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -40,8 +40,18 @@ header {
   border-radius: 8px;
 }
 
-.loading {
-  opacity: 0.6;
+.vip {
+  border: 2px solid #ffb400;
+}
+
+.vip-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: linear-gradient(135deg,#ffb400,#ff3b3b);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
 }
 </style>
 </head>
@@ -49,20 +59,30 @@ header {
 <body>
 
 <header>
-<h2>🔥 FohlaWin Live Matches</h2>
-<p>Auto Sync System</p>
+<h2>🔥 FohlaWin Live VIP</h2>
+<p>Auto Sync Matches + Tips</p>
 </header>
 
 <div class="container">
 
+  <!-- VIP -->
+  <div class="card vip">
+    <h3>💰 VIP Subscription</h3>
+    <p>Join via WhatsApp for premium tips</p>
+    <a href="https://wa.me/27821234567">
+      <button class="vip-btn">JOIN VIP</button>
+    </a>
+  </div>
+
+  <!-- MATCHES -->
   <div class="card">
-    <h3>⚽ Matches</h3>
-    <div id="matches" class="loading">Loading matches...</div>
+    <h3>⚽ Live Matches</h3>
+    <div id="matches">Loading...</div>
   </div>
 
 </div>
 
-<!-- FIREBASE SAFE MODE -->
+<!-- FIREBASE SAFE ENGINE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -76,51 +96,52 @@ const db = getDatabase(app);
 
 const container = document.getElementById("matches");
 
-// 🔥 WE LISTEN TO ROOT (NO STRUCTURE ASSUMPTIONS)
-onValue(ref(db, "/"), (snapshot) => {
+container.innerHTML = "Connecting...";
 
-  const data = snapshot.val();
+let loaded = false;
+
+// timeout fallback
+setTimeout(() => {
+  if (!loaded) {
+    container.innerHTML = "<p>No matches available right now</p>";
+  }
+}, 5000);
+
+onValue(ref(db, "/"), (snap) => {
+
+  loaded = true;
+
+  const data = snap.val();
 
   let matches = [];
 
-  // 🔥 SMART SCANNER (find ANY matches anywhere)
   function scan(obj) {
+    if (!obj) return;
 
-    if (!obj || typeof obj !== "object") return;
+    for (let k in obj) {
+      let v = obj[k];
 
-    for (let key in obj) {
+      if (v && typeof v === "object") {
 
-      const value = obj[key];
-
-      // match object detection
-      if (value && typeof value === "object") {
-
-        if (value.home && value.away) {
-          matches.push(value);
+        if (v.home && v.away) {
+          matches.push(v);
         }
 
-        scan(value); // keep searching deeper
+        scan(v);
       }
     }
   }
 
   scan(data);
 
-  render(matches);
-});
-
-// 🔥 RENDER FUNCTION
-function render(matches) {
-
   if (!matches.length) {
-    container.innerHTML = "<p>No matches found yet</p>";
+    container.innerHTML = "<p>No matches found</p>";
     return;
   }
 
   let html = "";
 
   matches.forEach(m => {
-
     html += `
       <div class="match">
         <b>${m.home || "Team A"} vs ${m.away || "Team B"}</b>
@@ -130,8 +151,8 @@ function render(matches) {
     `;
   });
 
-  container.innerHTML = h tml;
-}
+  container.innerHTML = ht ml;
+});
 </script>
 
 </body>
