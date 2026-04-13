@@ -49,12 +49,12 @@ header {
 
   <div class="card">
     <h3>⚽ Today's Matches</h3>
-    <div id="matches">Loading...</div>
+    <div id="matches">Loading matches...</div>
   </div>
 
 </div>
 
-<!-- FIREBASE -->
+<!-- FIREBASE SCRIPT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -71,31 +71,51 @@ const today = new Date().toISOString().split("T")[0];
 const matchesRef = ref(db, "matches/" + today);
 const tipsRef = ref(db, "tips/" + today);
 
-let matches = {};
-let tips = {};
+let matchesData = null;
+let tipsData = null;
 
+const container = document.getElementById("matches");
+
+// LOAD MATCHES
 onValue(matchesRef, (snapshot) => {
-  matches = snapshot.val() || {};
+  matchesData = snapshot.val() || {};
   render();
 });
 
+// LOAD TIPS
 onValue(tipsRef, (snapshot) => {
-  tips = snapshot.val() || {};
+  tipsData = snapshot.val() || {};
   render();
 });
 
+// SAFE RENDER FUNCTION
 function render() {
+
+  // prevent infinite loading
+  if (!matchesData) {
+    container.innerHTML = "<p>No matches found today</p>";
+    return;
+  }
+
   let html = "";
+  let hasData = false;
 
-  Object.values(matches).forEach((m) => {
+  Object.values(matchesData).forEach((m) => {
 
-    const key = (m.home || "").replaceAll(" ", "_") + "_vs_" + (m.away || "").replaceAll(" ", "_");
+    if (!m) return;
 
-    const tip = tips[key];
+    hasData = true;
+
+    const home = m.home || "Unknown";
+    const away = m.away || "Unknown";
+    const status = m.status || "pending";
+
+    const key = home.replaceAll(" ", "_") + "_vs_" + away.replaceAll(" ", "_");
+    const tip = tipsData ? tipsData[key] : null;
 
     html += `
       <div class="match">
-        <b>${m.home || "Unknown"} vs ${m.away || "Unknown"}</b>
+        <b>${home} vs ${away}</b>
 
         ${
           tip
@@ -106,14 +126,19 @@ function render() {
           : `<p>🔒 No Tip Yet</p>`
         }
 
-        <p>Status: ${m.status || "pending"}</p>
+        <p>Status: ${status}</p>
       </div>
     `;
   });
 
-  document.getElementById("matches").innerHTML = html;
+  if (!hasData) {
+    container.innerHTML = "<p>No matches available</p>";
+    return;
+  }
+
+  container.innerHTML = html;
 }
 </script>
 
 </body>
-  </html>
+</html>
