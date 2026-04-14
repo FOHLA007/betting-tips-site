@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FOHLA VIP Betting APP</title>
+<title>VIP Betting App</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -66,7 +66,7 @@ body {
   border:1px solid #1f2a44;
 }
 
-/* STATS GRID */
+/* STATS */
 .grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -94,6 +94,7 @@ body {
   border-left:3px solid #00ffcc;
 }
 
+/* BUTTON */
 button {
   width:100%;
   padding:10px;
@@ -101,6 +102,7 @@ button {
   border-radius:8px;
   background:#00ffcc;
   font-weight:bold;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -108,7 +110,7 @@ button {
 <body>
 
 <div class="header">
-<h2>🔥 FOHLA VIP Betting App</h2>
+<h2>🔥 VIP Betting App</h2>
 <p>AI Tips • Live Matches • Analytics</p>
 </div>
 
@@ -117,6 +119,7 @@ button {
 
   <div class="card">
     <h3>📢 VIP Access</h3>
+
     <p><b>💰 Price:</b> R50 per week</p>
 
     <p><b>📲 How to join:</b><br>
@@ -124,9 +127,16 @@ button {
     2. Send proof on WhatsApp<br>
     3. Your number will be activated</p>
 
-    <p><b>📞 WhatsApp:</b> 27655775885</p>
+    <!-- ✅ WHATSAPP BUTTON (AUTO MESSAGE) -->
+    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20to%20join%20VIP" target="_blank">
+      <button style="background:#25D366;color:white;margin-top:10px;">
+        💬 Join VIP on WhatsApp
+      </button>
+    </a>
 
-    <p style="color:#ffd700"><b>⚠️ No refunds after VIP activation</b></p>
+    <p style="color:#ffd700;margin-top:10px;">
+      <b>⚠️ No refunds after VIP activation</b>
+    </p>
   </div>
 
   <div class="card">
@@ -291,4 +301,4 @@ function loadStats(){
 </script>
 
 </body>
-</html> 
+  </html>
