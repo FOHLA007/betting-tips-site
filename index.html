@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FohlaWin Pro Betting</title>
+<title>VIP Betting Dashboard Pro</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -29,85 +29,79 @@ header {
   background:#10182b;
 }
 
-/* BUTTON */
-.cta {
-  background:#25D366;
-  color:white;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-  margin-top:10px;
-  width:100%;
-}
-
-/* CONTAINER */
-.container {padding:15px;}
-
 /* CARD */
 .card {
   background:#121a2a;
   padding:15px;
-  margin:12px 0;
-  border-radius:12px;
+  margin:12px;
+  border-radius:14px;
 }
 
-/* MATCH */
-.match {
-  border-left:4px solid #00ffcc;
-  padding:12px;
-  margin:10px 0;
+/* DASHBOARD GRID */
+.dashboard {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+/* STATS CARD */
+.stat {
   background:#0f1726;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  border:1px solid #1f2a44;
+}
+
+.stat h2 {
+  margin:0;
+  font-size:18px;
+}
+
+.stat p {
+  margin:5px 0;
+  font-size:14px;
+  opacity:0.8;
+}
+
+/* COLORS */
+.green {color:#00ff88;}
+.red {color:#ff4d4d;}
+.gold {color:#ffd700;}
+.blue {color:#00d4ff;}
+
+/* MATCH CARD */
+.match {
+  background:#0f1726;
+  padding:12px;
   border-radius:10px;
-  transition:0.3s;
-}
-
-/* LIVE GLOW */
-.live {
-  border-left:4px solid #00ff00;
-  box-shadow:0 0 10px #00ff00;
-  animation:pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% {box-shadow:0 0 5px #00ff00;}
-  50% {box-shadow:0 0 20px #00ff00;}
-  100% {box-shadow:0 0 5px #00ff00;}
-}
-
-/* WIN / LOSS */
-.win-tip {color:#00ff88;font-weight:bold;}
-.lose-tip {color:#ff4d4d;font-weight:bold;}
-
-/* BADGES */
-.badge {
-  padding:4px 8px;
-  border-radius:6px;
-  font-size:12px;
-  display:inline-block;
-}
-.live-badge {background:#00ff00;color:black;}
-.finished-badge {background:#555;}
-.pending-badge {background:#ffaa00;color:black;}
-
-input,button {
-  width:100%;
-  padding:10px;
   margin-top:10px;
-  border-radius:8px;
-  border:none;
+  border-left:4px solid #00ffcc;
 }
 
+/* BUTTON */
 button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
   background:#00ffcc;
   font-weight:bold;
 }
 
+/* VIP BUTTON */
+.vip-btn {
+  background:#25D366;
+  color:white;
+}
+
+/* FOOTER */
 footer {
   text-align:center;
   padding:15px;
-  font-size:12px;
   opacity:0.6;
+  font-size:12px;
 }
 </style>
 </head>
@@ -115,64 +109,62 @@ footer {
 <body>
 
 <header>
-<h2>🔥 FohlaWin Pro</h2>
-<p>Smart Betting • Daily Winning Tips</p>
+<h2>🔥 VIP Betting Dashboard Pro</h2>
+<p>AI Betting • Live Tips • Analytics</p>
 </header>
 
-<!-- BUSINESS SECTION -->
-<div class="hero">
-<h1>💰 VIP Access</h1>
-
-<div class="card">
-<p><b>VIP Subscription: R50 per week</b></p>
-
-<p>✔ Daily sure tips<br>
-✔ 99.9% accuracy tips<br>
-✔ Live match predictions</p>
-
-<p><b>⚠️ Important:</b></p>
-<p>No refund after payment.<br>
-This is a premium betting service.</p>
-
-<p><b>How to join:</b></p>
-<p>
-1. Click WhatsApp below<br>
-2. Make payment<br>
-3. Send your number<br>
-4. You get VIP access
-</p>
-
-<a href="https://wa.me/27655775885?text=I want VIP access">
-<button class="cta">JOIN VIP ON WHATSAPP</button>
-</a>
-</div>
-</div>
-
-<div class="container">
-
-<!-- LOGIN -->
+<!-- VIP LOGIN -->
 <div class="card">
 <h3>🔐 VIP Login</h3>
-<input id="phone" placeholder="Enter your phone number">
-<button onclick="checkVIP()">UNLOCK VIP</button>
-<p id="vipStatus"></p>
+<input id="phone" placeholder="Enter phone number" style="width:100%;padding:10px;border-radius:8px;border:none;">
+<button onclick="checkVIP()">Unlock VIP</button>
+<p id="status"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div class="card" id="dash" style="display:none;">
+
+<h3>📊 Performance Dashboard</h3>
+
+<div class="dashboard">
+
+<div class="stat">
+<h2 id="total">0</h2>
+<p>Total Tips</p>
+</div>
+
+<div class="stat">
+<h2 id="wins" class="green">0</h2>
+<p>Wins</p>
+</div>
+
+<div class="stat">
+<h2 id="losses" class="red">0</h2>
+<p>Losses</p>
+</div>
+
+<div class="stat">
+<h2 id="winrate" class="gold">0%</h2>
+<p>Win Rate</p>
+</div>
+
+<div class="stat" style="grid-column:span 2;">
+<h2 id="profit" class="blue">R0</h2>
+<p>Estimated Profit (R50 per win)</p>
+</div>
+
+</div>
 </div>
 
 <!-- MATCHES -->
 <div class="card">
 <h3>⚽ Live Matches</h3>
-<div id="matches">Loading matches...</div>
-</div>
-
+<div id="matches">Loading...</div>
 </div>
 
 <footer>
-© <span id="year"></span> FohlaWin Pro Betting
+© 2026 VIP Betting System
 </footer>
-
-<script>
-document.getElementById("year").innerText = new Date().getFullYear();
-</script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -184,44 +176,23 @@ const app = initializeApp({
 
 const db = getDatabase(app);
 
-const container = document.getElementById("matches");
+let vip = false;
+let matches = {};
+let tips = {};
 
-let vipUnlocked = false;
-let savedMatches = {};
-let savedTips = {};
+load();
 
-loadAll();
+async function load(){
 
-// LOAD DATA
-async function loadAll(){
+  const today = new Date().toISOString().split("T")[0];
 
-  try {
+  const mSnap = await get(ref(db,"matches/"+today));
+  const tSnap = await get(ref(db,"tips/"+today));
 
-    const today = new Date().toISOString().split("T")[0];
+  if(mSnap.exists()) matches = mSnap.val();
+  if(tSnap.exists()) tips = tSnap.val();
 
-    let matchSnap = await get(ref(db,"matches/"+today));
-
-    if(matchSnap.exists()){
-      savedMatches = matchSnap.val();
-
-      const tipSnap = await get(ref(db,"tips/"+today));
-      savedTips = tipSnap.exists() ? tipSnap.val() : {};
-    } else {
-      const allSnap = await get(ref(db,"matches"));
-      const all = allSnap.val();
-      const latest = Object.keys(all).sort().reverse()[0];
-
-      savedMatches = all[latest];
-
-      const tipSnap = await get(ref(db,"tips/"+latest));
-      savedTips = tipSnap.exists() ? tipSnap.val() : {};
-    }
-
-    render();
-
-  } catch(e){
-    container.innerHTML = "Error loading matches";
-  }
+  render();
 }
 
 // VIP LOGIN
@@ -232,78 +203,80 @@ window.checkVIP = async function(){
   const snap = await get(ref(db,"users/"+phone));
 
   if(!snap.exists()){
-    document.getElementById("vipStatus").innerText = "Not VIP ❌";
+    document.getElementById("status").innerText = "Not VIP ❌";
     return;
   }
 
   const user = snap.val();
 
   if(user.vip && new Date(user.expiry) > new Date()){
-    vipUnlocked = true;
-    document.getElementById("vipStatus").innerText = "VIP ACTIVE 🔥";
+    vip = true;
+    document.getElementById("status").innerText = "VIP ACTIVE 🔥";
+    loadDashboard();
   } else {
-    vipUnlocked = false;
-    document.getElementById("vipStatus").innerText = "VIP EXPIRED ❌";
+    vip = false;
+    document.getElementById("status").innerText = "VIP EXPIRED ❌";
   }
 
   render();
 };
 
-// RENDER
+// DASHBOARD
+function loadDashboard(){
+
+  let total = 0;
+  let wins = 0;
+  let losses = 0;
+
+  Object.values(tips).forEach(t => {
+
+    if(!t.result) return;
+
+    total++;
+
+    if(t.result === "WON") wins++;
+    if(t.result === "LOST") losses++;
+
+  });
+
+  let winrate = total ? ((wins/total)*100).toFixed(1) : 0;
+  let profit = (wins * 50) - (losses * 50);
+
+  document.getElementById("dash").style.display = "block";
+  document.getElementById("total").innerText = total;
+  document.getElementById("wins").innerText = wins;
+  document.getElementById("losses").innerText = losses;
+  document.getElementById("winrate").innerText = winrate + "%";
+  document.getElementById("profit").innerText = "R" + profit;
+}
+
+// RENDER MATCHES
 function render(){
 
   let html = "";
 
-  Object.values(savedMatches).forEach(m => {
+  Object.values(matches).forEach(m => {
 
     const key = (m.home + "_" + m.away).replaceAll(" ","_");
-    const tip = savedTips[key];
+    const tip = tips[key];
 
-    let matchClass = "match";
-    let badge = "";
-
-    if(m.status === "LIVE"){
-      matchClass += " live";
-      badge = '<span class="badge live-badge">LIVE</span>';
-    }
-    else if(m.status === "FINISHED"){
-      badge = '<span class="badge finished-badge">FINISHED</span>';
-    }
-    else{
-      badge = '<span class="badge pending-badge">PENDING</span>';
-    }
-
-    let tipHtml = "";
-
-    if(vipUnlocked){
-      if(tip){
-        if(m.status === "FINISHED"){
-          tipHtml = `<p class="win-tip">✅ WON: ${tip.tip}</p>`;
-        } else if(m.status === "LIVE"){
-          tipHtml = `<p>🔥 LIVE TIP: ${tip.tip}</p>`;
-        } else {
-          tipHtml = `<p>TIP: ${tip.tip}</p>`;
-        }
-      } else {
-        tipHtml = "<p>No tip yet</p>";
-      }
-    } else {
-      tipHtml = "<p>🔒 VIP ONLY</p>";
-    }
+    let tipText = vip
+      ? (tip ? "🔥 " + tip.tip : "No tip")
+      : "🔒 VIP ONLY";
 
     html += `
-      <div class="${matchClass}">
-        <b>${m.home} vs ${m.away}</b>
-        <p>${badge}</p>
-        <p>Score: ${m.score || "0-0"}</p>
-        ${tipHtml}
+      <div class="match">
+        <b>${m.home} vs ${m.away}</b><br>
+        Score: ${m.score || "0-0"}<br>
+        Status: ${m.status || "TIMED"}<br>
+        <p>${tipText}</p>
       </div>
     `;
   });
 
-  container.innerHTML = html;
+  document.getElementById("matches").innerHTML = html;
 }
 </script>
 
 </body>
-  </html>
+</html> 
