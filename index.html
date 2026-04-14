@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIP Betting App</title>
+<title>FOHLA VIP Betting APP</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -30,15 +30,20 @@ body {
   display:flex;
   justify-content:space-around;
   background:#0f172a;
-  padding:10px 0;
-  border-top:1px solid #1f2a44;
+  padding:12px 0;
+  border-top:2px solid #00ffcc;
 }
 
 .nav button {
-  background:none;
+  flex:1;
+  margin:0 5px;
+  padding:12px;
+  border-radius:10px;
   border:none;
+  background:#111827;
   color:white;
-  font-size:12px;
+  font-size:15px;
+  font-weight:bold;
 }
 
 /* PAGE */
@@ -75,10 +80,10 @@ body {
   text-align:center;
 }
 
-.stat h2 {
-  margin:0;
-  color:#00ffcc;
-}
+.green {color:#00ff88;}
+.red {color:#ff4d4d;}
+.gold {color:#ffd700;}
+.blue {color:#00d4ff;}
 
 /* MATCH */
 .match {
@@ -89,7 +94,6 @@ body {
   border-left:3px solid #00ffcc;
 }
 
-/* BUTTON */
 button {
   width:100%;
   padding:10px;
@@ -98,31 +102,43 @@ button {
   background:#00ffcc;
   font-weight:bold;
 }
-
-/* VIP */
-.lock {
-  opacity:0.5;
-}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<h2>🔥 VIP Betting App</h2>
+<h2>🔥 FOHLA VIP Betting App</h2>
 <p>AI Tips • Live Matches • Analytics</p>
 </div>
 
-<!-- HOME PAGE -->
+<!-- HOME -->
 <div class="page active" id="home">
+
+  <div class="card">
+    <h3>📢 VIP Access</h3>
+    <p><b>💰 Price:</b> R50 per week</p>
+
+    <p><b>📲 How to join:</b><br>
+    1. Make payment<br>
+    2. Send proof on WhatsApp<br>
+    3. Your number will be activated</p>
+
+    <p><b>📞 WhatsApp:</b> 27655775885</p>
+
+    <p style="color:#ffd700"><b>⚠️ No refunds after VIP activation</b></p>
+  </div>
+
   <div class="card">
     <h3>⚽ Live Matches</h3>
     <div id="matches">Loading...</div>
   </div>
+
 </div>
 
-<!-- VIP PAGE -->
+<!-- VIP -->
 <div class="page" id="vip">
+
   <div class="card">
     <h3>🔐 VIP Login</h3>
     <input id="phone" placeholder="Enter phone" style="width:100%;padding:10px;">
@@ -134,27 +150,31 @@ button {
     <h3>🔥 VIP Tips</h3>
     <div id="tips"></div>
   </div>
+
 </div>
 
-<!-- STATS PAGE -->
+<!-- STATS -->
 <div class="page" id="stats">
+
   <div class="card">
-    <h3>📊 Performance Stats</h3>
+    <h3>📊 Performance</h3>
 
     <div class="grid">
-      <div class="stat"><h2 id="wins">0</h2><p>Wins</p></div>
-      <div class="stat"><h2 id="losses">0</h2><p>Losses</p></div>
-      <div class="stat"><h2 id="winrate">0%</h2><p>Win Rate</p></div>
-      <div class="stat"><h2 id="profit">R0</h2><p>Profit</p></div>
+      <div class="stat"><h2 id="wins" class="green">0</h2><p>Wins</p></div>
+      <div class="stat"><h2 id="losses" class="red">0</h2><p>Losses</p></div>
+      <div class="stat"><h2 id="winrate" class="gold">0%</h2><p>Win Rate</p></div>
+      <div class="stat"><h2 id="profit" class="blue">R0</h2><p>Profit</p></div>
     </div>
+
   </div>
+
 </div>
 
 <!-- NAV -->
 <div class="nav">
-  <button onclick="show('home')">🏠 Home</button>
+  <button onclick="show('home')">🏠 HOME</button>
   <button onclick="show('vip')">🔐 VIP</button>
-  <button onclick="show('stats')">📊 Stats</button>
+  <button onclick="show('stats')">📊 STATS</button>
 </div>
 
 <script type="module">
@@ -187,13 +207,11 @@ async function load(){
   loadStats();
 }
 
-/* NAV */
 window.show = (page)=>{
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(page).classList.add("active");
 };
 
-/* VIP LOGIN */
 window.checkVIP = async function(){
 
   const phone = document.getElementById("phone").value;
@@ -216,7 +234,6 @@ window.checkVIP = async function(){
   }
 };
 
-/* MATCHES */
 function renderMatches(){
 
   let html = "";
@@ -238,7 +255,6 @@ function renderMatches(){
   document.getElementById("matches").innerHTML = html;
 }
 
-/* VIP TIPS */
 function loadVIP(){
 
   document.getElementById("vipTips").style.display = "block";
@@ -246,29 +262,22 @@ function loadVIP(){
   let html = "";
 
   Object.values(tips).forEach(t=>{
-
     if(!t.tip) return;
-
-    html += `<p>🔥 ${t.tip} <small>(${t.result || "PENDING"})</small></p>`;
+    html += `<p>🔥 ${t.tip} (${t.result || "PENDING"})</p>`;
   });
 
   document.getElementById("tips").innerHTML = html;
 }
 
-/* STATS */
 function loadStats(){
 
   let wins=0,losses=0,total=0;
 
   Object.values(tips).forEach(t=>{
-
     if(!t.result) return;
-
     total++;
-
     if(t.result==="WON") wins++;
     if(t.result==="LOST") losses++;
-
   });
 
   let wr = total ? ((wins/total)*100).toFixed(1) : 0;
@@ -282,4 +291,4 @@ function loadStats(){
 </script>
 
 </body>
-</html>
+</html> 
