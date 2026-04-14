@@ -36,7 +36,7 @@ footer {text-align:center;padding:15px;font-size:12px;opacity:0.7;}
 
 <button onclick="checkVIP()">ENTER VIP</button>
 
-<a href="https://wa.me/27655775885?text=I want VIP access">
+<a href="https://wa.me/27821234567?text=I want VIP access">
 <button class="vip-btn">JOIN VIA WHATSAPP</button>
 </a>
 
@@ -45,7 +45,7 @@ footer {text-align:center;padding:15px;font-size:12px;opacity:0.7;}
 
 <div class="card">
 <h3>⚽ Live Matches</h3>
-<div id="matches">Loading...</div>
+<div id="matches">Loading matches...</div>
 </div>
 
 </div>
@@ -70,6 +70,9 @@ const db = getDatabase(app);
 
 let vipUnlocked = false;
 
+// 🔥 LOAD MATCHES IMMEDIATELY (IMPORTANT FIX)
+loadMatches();
+
 // VIP LOGIN
 window.checkVIP = async function(){
 
@@ -90,20 +93,44 @@ window.checkVIP = async function(){
   } else {
     document.getElementById("vipStatus").innerText = "VIP EXPIRED ❌";
   }
-
-  loadMatches();
 };
 
-// LOAD MATCHES
+// LOAD MATCHES (WITH FALLBACK)
 function loadMatches(){
 
   const today = new Date().toISOString().split("T")[0];
 
-  onValue(ref(db,"matches/"+today),(snap)=>{
+  const todayRef = ref(db,"matches/"+today);
 
-    const matches = snap.val() || {};
-    loadTips(matches);
+  onValue(todayRef,(snap)=>{
 
+    const data = snap.val();
+
+    if(data){
+      loadTips(data);
+    } else {
+      loadLatest(); // fallback
+    }
+
+  });
+}
+
+// LOAD LATEST IF TODAY EMPTY
+function loadLatest(){
+
+  onValue(ref(db,"matches"),(snap)=>{
+
+    const all = snap.val();
+
+    if(!all){
+      document.getElementById("matches").innerHTML = "No matches found";
+      return;
+    }
+
+    const dates = Object.keys(all).sort().reverse();
+    const latest = dates[0];
+
+    loadTips(all[latest]);
   });
 }
 
@@ -115,13 +142,13 @@ function loadTips(matches){
   onValue(ref(db,"tips/"+today),(snap)=>{
 
     const tips = snap.val() || {};
-    render(matches, tips);
+    render(matches,tips);
 
   });
 }
 
 // RENDER
-function render(matches, tips){
+function render(matches,tips){
 
   let html="";
 
@@ -145,7 +172,7 @@ function render(matches, tips){
     `;
   });
 
-  document.getElementById("matches").innerHTML = html || "No matches today";
+  document.getElementById("matches ").innerHTML = html;
 }
 </script>
 
