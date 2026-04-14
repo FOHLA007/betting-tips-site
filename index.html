@@ -26,40 +26,43 @@ body {
   bottom:0;
   width:100%;
   display:flex;
-  justify-content:space-around;
   background:#0f172a;
-  padding:12px 0;
-  border-top:2px solid #00ffcc;
+  padding:10px;
 }
 
 .nav button {
   flex:1;
-  margin:0 5px;
-  padding:12px;
+  margin:5px;
+  padding:14px;
   border-radius:10px;
   border:none;
   background:#111827;
   color:white;
-  font-size:15px;
+  font-size:16px;
   font-weight:bold;
 }
 
 .page {
   display:none;
   padding:15px;
-  padding-bottom:80px;
+  padding-bottom:90px;
 }
 
-.active {
-  display:block;
-}
+.active { display:block; }
 
 .card {
   background:#111827;
   padding:15px;
   border-radius:12px;
   margin-bottom:12px;
-  border:1px solid #1f2a44;
+}
+
+.match {
+  background:#0f172a;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+  border-left:3px solid #00ffcc;
 }
 
 .grid {
@@ -80,14 +83,6 @@ body {
 .gold {color:#ffd700;}
 .blue {color:#00d4ff;}
 
-.match {
-  background:#0f172a;
-  padding:12px;
-  border-radius:10px;
-  margin-top:10px;
-  border-left:3px solid #00ffcc;
-}
-
 button {
   width:100%;
   padding:10px;
@@ -95,7 +90,6 @@ button {
   border-radius:8px;
   background:#00ffcc;
   font-weight:bold;
-  cursor:pointer;
 }
 </style>
 </head>
@@ -110,84 +104,81 @@ button {
 <!-- HOME -->
 <div class="page active" id="home">
 
-  <div class="card">
-    <h3>📢 VIP Access</h3>
+<div class="card">
+<h3>📢 VIP Access</h3>
 
-    <p><b>💰 Price:</b> R50 per week</p>
+<p><b>💰 Price:</b> R50/week</p>
 
-    <p><b>📲 How to join:</b><br>
-    1. Make payment<br>
-    2. Send proof on WhatsApp<br>
-    3. Your number will be activated</p>
+<p>
+📲 Join VIP:<br>
+1. Pay<br>
+2. Send proof<br>
+3. Get activated
+</p>
 
-    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20to%20join%20VIP.%20Please%20send%20payment%20details" target="_blank">
-      <button style="background:#25D366;color:white;margin-top:10px;">
-        💬 Join VIP on WhatsApp
-      </button>
-    </a>
+<a href="https://wa.me/27655775885?text=Hi%20I%20want%20VIP" target="_blank">
+<button style="background:#25D366;color:white;">
+💬 Join via WhatsApp
+</button>
+</a>
 
-    <p style="color:#ffd700;margin-top:10px;">
-      <b>⚠️ No refunds after VIP activation</b>
-    </p>
+<p class="gold"><b>⚠️ No refunds after activation</b></p>
+</div>
 
-    <p style="color:#ff4d4d;"><b>⚠️ Limited VIP slots available</b></p>
-  </div>
+<div class="card">
+<h3>🔥 Yesterday Results</h3>
+<p>Wins: <span id="yWins">0</span></p>
+<p>Losses: <span id="yLosses">0</span></p>
+<p>Win Rate: <span id="yRate">0%</span></p>
+<p>Profit: <span id="yProfit">R0</span></p>
+</div>
 
-  <!-- YESTERDAY RESULTS -->
-  <div class="card">
-    <h3>🔥 Yesterday Results</h3>
-    <p>✅ Wins: <span id="yWins">0</span></p>
-    <p>❌ Losses: <span id="yLosses">0</span></p>
-    <p>📊 Win Rate: <span id="yRate">0%</span></p>
-    <p>💰 Profit: <span id="yProfit">R0</span></p>
-  </div>
-
-  <div class="card">
-    <h3>⚽ Live Matches</h3>
-    <div id="matches">Loading...</div>
-  </div>
+<div class="card">
+<h3>⚽ Matches</h3>
+<div id="matches">Loading...</div>
+</div>
 
 </div>
 
 <!-- VIP -->
 <div class="page" id="vip">
 
-  <div class="card">
-    <h3>🔐 VIP Login</h3>
-    <input id="phone" placeholder="Enter phone" style="width:100%;padding:10px;">
-    <button onclick="checkVIP()">Unlock VIP</button>
-    <p id="status"></p>
-  </div>
+<div class="card">
+<h3>🔐 VIP Login</h3>
+<input id="phone" placeholder="Phone number" style="width:100%;padding:10px;">
+<button onclick="checkVIP()">Unlock VIP</button>
+<p id="status"></p>
+</div>
 
-  <div class="card" id="vipTips" style="display:none;">
-    <h3>🔥 VIP Tips</h3>
-    <div id="tips"></div>
-  </div>
+<div class="card" id="vipTips" style="display:none;">
+<h3>🔥 VIP Tips</h3>
+<div id="tips"></div>
+</div>
 
 </div>
 
 <!-- STATS -->
 <div class="page" id="stats">
 
-  <div class="card">
-    <h3>📊 Performance</h3>
+<div class="card">
+<h3>📊 Performance</h3>
 
-    <div class="grid">
-      <div class="stat"><h2 id="wins" class="green">0</h2><p>Wins</p></div>
-      <div class="stat"><h2 id="losses" class="red">0</h2><p>Losses</p></div>
-      <div class="stat"><h2 id="winrate" class="gold">0%</h2><p>Win Rate</p></div>
-      <div class="stat"><h2 id="profit" class="blue">R0</h2><p>Profit</p></div>
-    </div>
+<div class="grid">
+<div class="stat"><h2 id="wins" class="green">0</h2><p>Wins</p></div>
+<div class="stat"><h2 id="losses" class="red">0</h2><p>Losses</p></div>
+<div class="stat"><h2 id="winrate" class="gold">0%</h2><p>Win Rate</p></div>
+<div class="stat"><h2 id="profit" class="blue">R0</h2><p>Profit</p></div>
+</div>
 
-  </div>
+</div>
 
 </div>
 
 <!-- NAV -->
 <div class="nav">
-  <button onclick="show('home')">🏠 HOME</button>
-  <button onclick="show('vip')">🔐 VIP</button>
-  <button onclick="show('stats')">📊 STATS</button>
+<button onclick="show('home')">🏠 HOME</button>
+<button onclick="show('vip')">🔐 VIP</button>
+<button onclick="show('stats')">📊 STATS</button>
 </div>
 
 <script type="module">
@@ -200,164 +191,190 @@ const app = initializeApp({
 
 const db = getDatabase(app);
 
-let vip = false;
-let matches = {};
-let tips = {};
+let vip=false;
+let matches={};
+let tips={};
 
-const today = new Date().toISOString().split("T")[0];
+const today=new Date().toISOString().split("T")[0];
 
 load();
 
 async function load(){
 
-  const m = await get(ref(db,"matches/"+today));
-  const t = await get(ref(db,"tips/"+today));
+  const m=await get(ref(db,"matches/"+today));
+  const t=await get(ref(db,"tips/"+today));
 
-  if(m.exists()) matches = m.val();
-  if(t.exists()) tips = t.val();
+  if(m.exists()) matches=m.val();
+  if(t.exists()) tips=t.val();
 
   renderMatches();
   loadStats();
   loadYesterday();
 
-  // 🔥 AUTO LOGIN
-  const savedUser = localStorage.getItem("vipUser");
+  // AUTO LOGIN
+  const savedUser=localStorage.getItem("vipUser");
 
   if(savedUser){
-    const snap = await get(ref(db,"users/"+savedUser));
+    const snap=await get(ref(db,"users/"+savedUser));
 
     if(snap.exists()){
-      const u = snap.val();
+      const u=snap.val();
 
-      if(u.vip && new Date(u.expiry) > new Date()){
-        vip = true;
-        document.getElementById("status").innerText = "VIP ACTIVE 🔥";
+      if(u.vip && new Date(u.expiry)>new Date()){
+        vip=true;
+        document.getElementById("status").innerText="VIP ACTIVE 🔥";
         loadVIP();
         renderMatches();
-      } else {
+      }else{
         localStorage.removeItem("vipUser");
       }
     }
   }
 }
 
-window.show = (page)=>{
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(page).classList.add("active");
+setInterval(load,600000); // AUTO REFRESH
+
+window.show=(p)=>{
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+document.getElementById(p).classList.add("active");
 };
 
-window.checkVIP = async function(){
+window.checkVIP=async function(){
 
-  const phone = document.getElementById("phone").value;
+const phone=document.getElementById("phone").value;
 
-  const snap = await get(ref(db,"users/"+phone));
+const snap=await get(ref(db,"users/"+phone));
 
-  if(!snap.exists()){
-    document.getElementById("status").innerText = "Not VIP ❌";
-    return;
-  }
+if(!snap.exists()){
+document.getElementById("status").innerText="Not VIP ❌";
+return;
+}
 
-  const u = snap.val();
+const u=snap.val();
 
-  if(u.vip && new Date(u.expiry) > new Date()){
-    vip = true;
+if(u.vip && new Date(u.expiry)>new Date()){
+vip=true;
 
-    // SAVE LOGIN
-    localStorage.setItem("vipUser", phone);
+localStorage.setItem("vipUser",phone);
 
-    document.getElementById("status").innerText = "VIP ACTIVE 🔥";
+document.getElementById("status").innerText="VIP ACTIVE 🔥";
 
-    loadVIP();
-    renderMatches();
-    show("home");
+loadVIP();
+renderMatches();
+show("home");
 
-  } else {
-    document.getElementById("status").innerText = "VIP EXPIRED ❌";
-  }
+}else{
+document.getElementById("status").innerText="VIP EXPIRED ❌";
+}
 };
 
 function renderMatches(){
 
-  let html = "";
+let html="";
 
-  Object.values(matches).forEach(m=>{
+Object.values(matches).forEach(m=>{
 
-    const key = (m.home+"_"+m.away).replaceAll(" ","_");
-    const tip = tips[key];
+const key=(m.home+"_"+m.away).replaceAll(" ","_");
+const tip=tips[key];
 
-    html += `
-      <div class="match">
-        <b>${m.home} vs ${m.away}</b><br>
-        ${m.score} | ${m.status}<br>
-        <p>${vip ? (tip ? "🔥 "+tip.tip : "No tip") : "🔒 VIP ONLY"}</p>
-      </div>
-    `;
-  });
+let statusColor="";
+let statusText=m.status;
 
-  document.getElementById("matches").innerHTML = html;
+if(m.status==="IN_PLAY"){
+statusColor="red";
+statusText="🔴 LIVE";
+}
+else if(m.status==="TIMED"){
+statusColor="gold";
+statusText="⏳ "+(m.time || "Soon");
+}
+else if(m.status==="FINISHED"){
+statusColor="green";
+statusText="✅ FT";
+}
+
+html+=`
+<div class="match">
+<b>${m.home} vs ${m.away}</b><br>
+
+<span style="color:${statusColor};font-weight:bold;">
+${statusText}
+</span><br>
+
+<span style="font-size:18px;">
+${m.score}
+</span><br>
+
+<p>
+${vip ? (tip ? "🔥 "+tip.tip : "No tip") : "🔒 VIP ONLY"}
+</p>
+</div>
+`;
+});
+
+document.getElementById("matches").innerHTML=html;
 }
 
 function loadVIP(){
 
-  document.getElementById("vipTips").style.display = "block";
+document.getElementById("vipTips").style.display="block";
 
-  let html = "";
+let html="";
 
-  Object.values(tips).forEach(t=>{
-    if(!t.tip) return;
-    html += `<p>🔥 ${t.tip} (${t.result || "PENDING"})</p>`;
-  });
+Object.values(tips).forEach(t=>{
+if(!t.tip) return;
+html+=`<p>🔥 ${t.tip} (${t.result || "PENDING"})</p>`;
+});
 
-  document.getElementById("tips").innerHTML = html;
+document.getElementById("tips").innerHTML=html;
 }
 
 function loadStats(){
 
-  let wins=0,losses=0,total=0;
+let wins=0,losses=0,total=0;
 
-  Object.values(tips).forEach(t=>{
-    if(!t.result) return;
-    total++;
-    if(t.result==="WON") wins++;
-    if(t.result==="LOST") losses++;
-  });
+Object.values(tips).forEach(t=>{
+if(!t.result) return;
+total++;
+if(t.result==="WON") wins++;
+if(t.result==="LOST") losses++;
+});
 
-  let wr = total ? ((wins/total)*100).toFixed(1) : 0;
-  let profit = (wins*50)-(losses*50);
+let wr=total?((wins/total)*100).toFixed(1):0;
+let profit=(wins*50)-(losses*50);
 
-  document.getElementById("wins").innerText = wins;
-  document.getElementById("losses").innerText = losses;
-  document.getElementById("winrate").innerText = wr+"%";
-  document.getElementById("profit").innerText = "R"+profit;
+document.getElementById("wins").innerText=wins;
+document.getElementById("losses").innerText=losses;
+document.getElementById("winrate").innerText=wr+"%";
+document.getElementById("profit").innerText="R"+profit;
 }
 
 async function loadYesterday(){
 
-  const yesterday = new Date(Date.now()-86400000)
-    .toISOString().split("T")[0];
+const y=new Date(Date.now()-86400000).toISOString().split("T")[0];
 
-  const snap = await get(ref(db,"tips/"+yesterday));
+const snap=await get(ref(db,"tips/"+y));
 
-  if(!snap.exists()) return;
+if(!snap.exists()) return;
 
-  const tips = snap.val();
+const tips=snap.val();
 
-  let wins=0,losses=0,total=0;
+let wins=0,losses=0,total=0;
 
-  Object.values(tips).forEach(t=>{
-    if(!t.result) return;
-    total++;
-    if(t.result==="WON") wins++;
-    if(t.result==="LOST") losses++;
-  });
+Object.values(tips).forEach(t=>{
+if(!t.result) return;
+total++;
+if(t.result==="WON") wins++;
+if(t.result==="LOST") losses++;
+});
 
-  let rate = total ? ((wins/total)*100).toFixed(1) : 0;
-  let profit = (wins*50)-(losses*50);
+let rate=total?((wins/total)*100).toFixed(1):0;
+let profit=(wins*50)-(losses*50);
 
-  document.getElementById("yWins").innerText = wins;
-  document.getElementById("yLosses").innerText = losses;
-  document.getElementById("yRate").innerText = rate+"%";
-  document.getElementById("yProfit").innerText = "R"+profit;
+document.getElementById("yWins").innerText=wins;
+document.getElementById("yLosses").innerText=losses;
+document.getElementById("yRate").innerText=rate+"%";
+document.getElementById("yProfit").innerText="R"+profit;
 }
 </script>
 
