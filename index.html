@@ -3,168 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIP Betting Dashboard Pro</title>
+<title>VIP Betting App</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin:0;
-  font-family:Poppins;
-  background:#0a0f1c;
+  font-family:Inter;
+  background:#0b0f1a;
   color:white;
 }
 
 /* HEADER */
-header {
-  background:linear-gradient(135deg,#1e3c72,#2a5298);
-  padding:20px;
+.header {
+  padding:18px;
   text-align:center;
+  background:linear-gradient(135deg,#1a2a6c,#0f172a);
 }
 
-/* HERO */
-.hero {
-  padding:20px;
-  text-align:center;
-  background:#10182b;
+/* NAV */
+.nav {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:#0f172a;
+  padding:10px 0;
+  border-top:1px solid #1f2a44;
+}
+
+.nav button {
+  background:none;
+  border:none;
+  color:white;
+  font-size:12px;
+}
+
+/* PAGE */
+.page {
+  display:none;
+  padding:15px;
+  padding-bottom:80px;
+}
+
+.active {
+  display:block;
 }
 
 /* CARD */
 .card {
-  background:#121a2a;
+  background:#111827;
   padding:15px;
-  margin:12px;
-  border-radius:14px;
+  border-radius:12px;
+  margin-bottom:12px;
+  border:1px solid #1f2a44;
 }
 
-/* DASHBOARD GRID */
-.dashboard {
+/* STATS GRID */
+.grid {
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
 
-/* STATS CARD */
 .stat {
-  background:#0f1726;
-  padding:15px;
-  border-radius:12px;
+  background:#0f172a;
+  padding:12px;
+  border-radius:10px;
   text-align:center;
-  border:1px solid #1f2a44;
 }
 
 .stat h2 {
   margin:0;
-  font-size:18px;
+  color:#00ffcc;
 }
 
-.stat p {
-  margin:5px 0;
-  font-size:14px;
-  opacity:0.8;
-}
-
-/* COLORS */
-.green {color:#00ff88;}
-.red {color:#ff4d4d;}
-.gold {color:#ffd700;}
-.blue {color:#00d4ff;}
-
-/* MATCH CARD */
+/* MATCH */
 .match {
-  background:#0f1726;
+  background:#0f172a;
   padding:12px;
   border-radius:10px;
   margin-top:10px;
-  border-left:4px solid #00ffcc;
+  border-left:3px solid #00ffcc;
 }
 
 /* BUTTON */
 button {
   width:100%;
-  padding:12px;
-  margin-top:10px;
+  padding:10px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   background:#00ffcc;
   font-weight:bold;
 }
 
-/* VIP BUTTON */
-.vip-btn {
-  background:#25D366;
-  color:white;
-}
-
-/* FOOTER */
-footer {
-  text-align:center;
-  padding:15px;
-  opacity:0.6;
-  font-size:12px;
+/* VIP */
+.lock {
+  opacity:0.5;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-<h2>🔥 VIP Betting Dashboard Pro</h2>
-<p>AI Betting • Live Tips • Analytics</p>
-</header>
-
-<!-- VIP LOGIN -->
-<div class="card">
-<h3>🔐 VIP Login</h3>
-<input id="phone" placeholder="Enter phone number" style="width:100%;padding:10px;border-radius:8px;border:none;">
-<button onclick="checkVIP()">Unlock VIP</button>
-<p id="status"></p>
+<div class="header">
+<h2>🔥 VIP Betting App</h2>
+<p>AI Tips • Live Matches • Analytics</p>
 </div>
 
-<!-- DASHBOARD -->
-<div class="card" id="dash" style="display:none;">
-
-<h3>📊 Performance Dashboard</h3>
-
-<div class="dashboard">
-
-<div class="stat">
-<h2 id="total">0</h2>
-<p>Total Tips</p>
+<!-- HOME PAGE -->
+<div class="page active" id="home">
+  <div class="card">
+    <h3>⚽ Live Matches</h3>
+    <div id="matches">Loading...</div>
+  </div>
 </div>
 
-<div class="stat">
-<h2 id="wins" class="green">0</h2>
-<p>Wins</p>
+<!-- VIP PAGE -->
+<div class="page" id="vip">
+  <div class="card">
+    <h3>🔐 VIP Login</h3>
+    <input id="phone" placeholder="Enter phone" style="width:100%;padding:10px;">
+    <button onclick="checkVIP()">Unlock VIP</button>
+    <p id="status"></p>
+  </div>
+
+  <div class="card" id="vipTips" style="display:none;">
+    <h3>🔥 VIP Tips</h3>
+    <div id="tips"></div>
+  </div>
 </div>
 
-<div class="stat">
-<h2 id="losses" class="red">0</h2>
-<p>Losses</p>
+<!-- STATS PAGE -->
+<div class="page" id="stats">
+  <div class="card">
+    <h3>📊 Performance Stats</h3>
+
+    <div class="grid">
+      <div class="stat"><h2 id="wins">0</h2><p>Wins</p></div>
+      <div class="stat"><h2 id="losses">0</h2><p>Losses</p></div>
+      <div class="stat"><h2 id="winrate">0%</h2><p>Win Rate</p></div>
+      <div class="stat"><h2 id="profit">R0</h2><p>Profit</p></div>
+    </div>
+  </div>
 </div>
 
-<div class="stat">
-<h2 id="winrate" class="gold">0%</h2>
-<p>Win Rate</p>
+<!-- NAV -->
+<div class="nav">
+  <button onclick="show('home')">🏠 Home</button>
+  <button onclick="show('vip')">🔐 VIP</button>
+  <button onclick="show('stats')">📊 Stats</button>
 </div>
-
-<div class="stat" style="grid-column:span 2;">
-<h2 id="profit" class="blue">R0</h2>
-<p>Estimated Profit (R50 per win)</p>
-</div>
-
-</div>
-</div>
-
-<!-- MATCHES -->
-<div class="card">
-<h3>⚽ Live Matches</h3>
-<div id="matches">Loading...</div>
-</div>
-
-<footer>
-© 2026 VIP Betting System
-</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -180,22 +171,29 @@ let vip = false;
 let matches = {};
 let tips = {};
 
+const today = new Date().toISOString().split("T")[0];
+
 load();
 
 async function load(){
 
-  const today = new Date().toISOString().split("T")[0];
+  const m = await get(ref(db,"matches/"+today));
+  const t = await get(ref(db,"tips/"+today));
 
-  const mSnap = await get(ref(db,"matches/"+today));
-  const tSnap = await get(ref(db,"tips/"+today));
+  if(m.exists()) matches = m.val();
+  if(t.exists()) tips = t.val();
 
-  if(mSnap.exists()) matches = mSnap.val();
-  if(tSnap.exists()) tips = tSnap.val();
-
-  render();
+  renderMatches();
+  loadStats();
 }
 
-// VIP LOGIN
+/* NAV */
+window.show = (page)=>{
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
+};
+
+/* VIP LOGIN */
 window.checkVIP = async function(){
 
   const phone = document.getElementById("phone").value;
@@ -207,76 +205,81 @@ window.checkVIP = async function(){
     return;
   }
 
-  const user = snap.val();
+  const u = snap.val();
 
-  if(user.vip && new Date(user.expiry) > new Date()){
+  if(u.vip && new Date(u.expiry) > new Date()){
     vip = true;
     document.getElementById("status").innerText = "VIP ACTIVE 🔥";
-    loadDashboard();
+    loadVIP();
   } else {
-    vip = false;
     document.getElementById("status").innerText = "VIP EXPIRED ❌";
   }
-
-  render();
 };
 
-// DASHBOARD
-function loadDashboard(){
-
-  let total = 0;
-  let wins = 0;
-  let losses = 0;
-
-  Object.values(tips).forEach(t => {
-
-    if(!t.result) return;
-
-    total++;
-
-    if(t.result === "WON") wins++;
-    if(t.result === "LOST") losses++;
-
-  });
-
-  let winrate = total ? ((wins/total)*100).toFixed(1) : 0;
-  let profit = (wins * 50) - (losses * 50);
-
-  document.getElementById("dash").style.display = "block";
-  document.getElementById("total").innerText = total;
-  document.getElementById("wins").innerText = wins;
-  document.getElementById("losses").innerText = losses;
-  document.getElementById("winrate").innerText = winrate + "%";
-  document.getElementById("profit").innerText = "R" + profit;
-}
-
-// RENDER MATCHES
-function render(){
+/* MATCHES */
+function renderMatches(){
 
   let html = "";
 
-  Object.values(matches).forEach(m => {
+  Object.values(matches).forEach(m=>{
 
-    const key = (m.home + "_" + m.away).replaceAll(" ","_");
+    const key = (m.home+"_"+m.away).replaceAll(" ","_");
     const tip = tips[key];
-
-    let tipText = vip
-      ? (tip ? "🔥 " + tip.tip : "No tip")
-      : "🔒 VIP ONLY";
 
     html += `
       <div class="match">
         <b>${m.home} vs ${m.away}</b><br>
-        Score: ${m.score || "0-0"}<br>
-        Status: ${m.status || "TIMED"}<br>
-        <p>${tipText}</p>
+        ${m.score} | ${m.status}<br>
+        <p>${vip ? (tip ? "🔥 "+tip.tip : "No tip") : "🔒 VIP ONLY"}</p>
       </div>
     `;
   });
 
   document.getElementById("matches").innerHTML = html;
 }
+
+/* VIP TIPS */
+function loadVIP(){
+
+  document.getElementById("vipTips").style.display = "block";
+
+  let html = "";
+
+  Object.values(tips).forEach(t=>{
+
+    if(!t.tip) return;
+
+    html += `<p>🔥 ${t.tip} <small>(${t.result || "PENDING"})</small></p>`;
+  });
+
+  document.getElementById("tips").innerHTML = html;
+}
+
+/* STATS */
+function loadStats(){
+
+  let wins=0,losses=0,total=0;
+
+  Object.values(tips).forEach(t=>{
+
+    if(!t.result) return;
+
+    total++;
+
+    if(t.result==="WON") wins++;
+    if(t.result==="LOST") losses++;
+
+  });
+
+  let wr = total ? ((wins/total)*100).toFixed(1) : 0;
+  let profit = (wins*50)-(losses*50);
+
+  document.getElementById("wins").innerText = wins;
+  document.getElementById("losses").innerText = losses;
+  document.getElementById("winrate").innerText = wr+"%";
+  document.getElementById("profit").innerText = "R"+profit;
+}
 </script>
 
 </body>
-</html> 
+</html>
