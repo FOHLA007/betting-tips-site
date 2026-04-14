@@ -4,36 +4,57 @@
 <title>Admin Panel</title>
 
 <style>
-body {font-family:Poppins;background:#0b0f1a;color:white;padding:20px;}
-.card {background:#121a2a;padding:15px;max-width:500px;margin:auto;border-radius:12px;}
-input,button {width:100%;padding:10px;margin-top:10px;}
-button {background:gold;border:none;font-weight:bold;}
+body {
+  font-family:Poppins;
+  background:#0b0f1a;
+  color:white;
+  padding:20px;
+}
+
+.card {
+  background:#121a2a;
+  padding:15px;
+  border-radius:12px;
+  max-width:600px;
+  margin:auto;
+}
+
+input,button,select {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+}
+
+button {
+  background:gold;
+  font-weight:bold;
+}
 </style>
 </head>
 
 <body>
 
-<h2>⚙ Admin Panel</h2>
+<h2>⚙ Admin Dashboard</h2>
 
 <div class="card">
 
-<h3>Add Match</h3>
-<input id="home" placeholder="Home">
-<input id="away" placeholder="Away">
-<input id="score" placeholder="Score">
-<input id="status" placeholder="Status">
-<button onclick="addMatch()">ADD MATCH</button>
+<h3>📊 Add Tip (AUTO MATCH SELECT)</h3>
 
-<hr>
+<!-- MATCH DROPDOWN -->
+<select id="matchSelect">
+  <option>Loading matches...</option>
+</select>
 
-<h3>Add Tip</h3>
-<input id="key" placeholder="Arsenal_vs_Chelsea">
-<input id="tip" placeholder="Tip">
+<!-- TIP -->
+<input id="tip" placeholder="Enter tip (e.g Over 2.5 goals)">
+
 <button onclick="addTip()">ADD TIP</button>
 
 <hr>
 
-<h3>Add VIP User</h3>
+<h3>💰 Add VIP User</h3>
 <input id="vipPhone" placeholder="27821234567">
 <input id="vipExpiry" placeholder="YYYY-MM-DD">
 <button onclick="addVIP()">ADD VIP</button>
@@ -42,7 +63,7 @@ button {background:gold;border:none;font-weight:bold;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp({
   databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
@@ -52,30 +73,73 @@ const db = getDatabase(app);
 
 const today = new Date().toISOString().split("T")[0];
 
-window.addMatch = function(){
-  push(ref(db,"matches/"+today),{
-    home:home.value,
-    away:away.value,
-    score:score.value,
-    status:status.value
-  });
-  alert("Match added");
-};
+// =====================
+// LOAD MATCHES INTO DROPDOWN
+// =====================
+async function loadMatches(){
 
+  const snap = await get(ref(db,"matches/"+today));
+
+  const select = document.getElementById("matchSelect");
+
+  select.innerHTML = "";
+
+  if(!snap.exists()){
+    select.innerHTML = "<option>No matches found</option>";
+    return;
+  }
+
+  const matches = snap.val();
+
+  Object.values(matches).forEach(m=>{
+
+    const option = document.createElement("option");
+
+    option.value = (m.home + "_" + m.away).replaceAll(" ","_");
+    option.textContent = `${m.home} vs ${m.away}`;
+
+    select.appendChild(option);
+  });
+}
+
+loadMatches();
+
+// =====================
+// ADD TIP (AUTO KEY)
+// =====================
 window.addTip = function(){
-  set(ref(db,"tips/"+today+"/"+key.value.replaceAll(" ","_")),{
-    tip:tip.value
+
+  const matchKey = document.getElementById("matchSelect").value;
+  const tipValue = document.getElementById("tip").value;
+
+  if(!tipValue){
+    alert("Enter a tip first");
+    return;
+  }
+
+  set(ref(db,"tips/"+today+"/"+matchKey),{
+    tip: tipValue
   });
-  alert("Tip added");
+
+  alert("Tip added successfully!");
 };
 
+// =====================
+// ADD VIP USER
+// =====================
 window.addVIP = function(){
-  set(ref(db,"users/"+vipPhone.value),{
+
+  const phone = vipPhone.value;
+  const expiry = vipExpiry.value;
+
+  set(ref(db,"users/"+phone),{
     vip:true,
-    expiry:vipExpiry.value
+    expiry:expiry
   });
-  alert("VIP added");
+
+  alert("VIP user added!");
 };
+
 </script>
 
 </body>
