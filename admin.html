@@ -4,33 +4,10 @@
 <title>Admin Panel</title>
 
 <style>
-body{
-  font-family:Poppins;
-  background:#0b0f1a;
-  color:white;
-  padding:20px;
-}
-
-.card{
-  background:#121a2a;
-  padding:15px;
-  max-width:500px;
-  margin:auto;
-  border-radius:12px;
-}
-
-input,button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-}
-
-button{
-  background:gold;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
+body {font-family:Poppins;background:#0b0f1a;color:white;padding:20px;}
+.card {background:#121a2a;padding:15px;max-width:500px;margin:auto;border-radius:12px;}
+input,button {width:100%;padding:10px;margin-top:10px;}
+button {background:gold;border:none;font-weight:bold;}
 </style>
 </head>
 
@@ -41,21 +18,25 @@ button{
 <div class="card">
 
 <h3>Add Match</h3>
-
 <input id="home" placeholder="Home">
 <input id="away" placeholder="Away">
 <input id="score" placeholder="Score">
 <input id="status" placeholder="Status">
-
 <button onclick="addMatch()">ADD MATCH</button>
 
 <hr>
 
-<h3>Add VIP Tip</h3>
-
+<h3>Add Tip</h3>
 <input id="key" placeholder="Arsenal_vs_Chelsea">
 <input id="tip" placeholder="Tip">
 <button onclick="addTip()">ADD TIP</button>
+
+<hr>
+
+<h3>Add VIP User</h3>
+<input id="vipPhone" placeholder="27821234567">
+<input id="vipExpiry" placeholder="YYYY-MM-DD">
+<button onclick="addVIP()">ADD VIP</button>
 
 </div>
 
@@ -63,34 +44,37 @@ button{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const firebaseConfig = {
+const app = initializeApp({
   databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
-};
+});
 
-const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const today = new Date().toISOString().split("T")[0];
 
 window.addMatch = function(){
-
   push(ref(db,"matches/"+today),{
     home:home.value,
     away:away.value,
     score:score.value,
     status:status.value
   });
-
   alert("Match added");
 };
 
 window.addTip = function(){
-
   set(ref(db,"tips/"+today+"/"+key.value.replaceAll(" ","_")),{
     tip:tip.value
   });
+  alert("Tip added");
+};
 
-  alert("VIP tip added");
+window.addVIP = function(){
+  set(ref(db,"users/"+vipPhone.value),{
+    vip:true,
+    expiry:vipExpiry.value
+  });
+  alert("VIP added");
 };
 </script>
 
