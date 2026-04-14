@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIP Betting App</title>
+<title>FOHLA Betting App</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -15,14 +15,12 @@ body {
   color:white;
 }
 
-/* HEADER */
 .header {
   padding:18px;
   text-align:center;
   background:linear-gradient(135deg,#1a2a6c,#0f172a);
 }
 
-/* NAV */
 .nav {
   position:fixed;
   bottom:0;
@@ -46,7 +44,6 @@ body {
   font-weight:bold;
 }
 
-/* PAGE */
 .page {
   display:none;
   padding:15px;
@@ -57,7 +54,6 @@ body {
   display:block;
 }
 
-/* CARD */
 .card {
   background:#111827;
   padding:15px;
@@ -66,7 +62,6 @@ body {
   border:1px solid #1f2a44;
 }
 
-/* STATS */
 .grid {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -85,7 +80,6 @@ body {
 .gold {color:#ffd700;}
 .blue {color:#00d4ff;}
 
-/* MATCH */
 .match {
   background:#0f172a;
   padding:12px;
@@ -94,7 +88,6 @@ body {
   border-left:3px solid #00ffcc;
 }
 
-/* BUTTON */
 button {
   width:100%;
   padding:10px;
@@ -110,8 +103,8 @@ button {
 <body>
 
 <div class="header">
-<h2>🔥 VIP Betting App</h2>
-<p>AI Tips • Live Matches • Analytics</p>
+<h2>🔥 FOHLA BETTING APP</h2>
+<p>AI TIPS • LIVE MATCHES • ANALYTICS</p>
 </div>
 
 <!-- HOME -->
@@ -127,8 +120,7 @@ button {
     2. Send proof on WhatsApp<br>
     3. Your number will be activated</p>
 
-    <!-- ✅ WHATSAPP BUTTON (AUTO MESSAGE) -->
-    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20to%20join%20VIP" target="_blank">
+    <a href="https://wa.me/27655775885?text=Hi%20I%20want%20to%20join%20VIP.%20Please%20send%20payment%20details" target="_blank">
       <button style="background:#25D366;color:white;margin-top:10px;">
         💬 Join VIP on WhatsApp
       </button>
@@ -137,6 +129,18 @@ button {
     <p style="color:#ffd700;margin-top:10px;">
       <b>⚠️ No refunds after VIP activation</b>
     </p>
+
+    <p style="color:#ff4d4d;"><b>⚠️ Limited VIP slots available</b></p>
+  </div>
+
+  <!-- 🔥 YESTERDAY RESULTS -->
+  <div class="card">
+    <h3>🔥 Yesterday Results</h3>
+
+    <p>✅ Wins: <span id="yWins">0</span></p>
+    <p>❌ Losses: <span id="yLosses">0</span></p>
+    <p>📊 Win Rate: <span id="yRate">0%</span></p>
+    <p>💰 Profit: <span id="yProfit">R0</span></p>
   </div>
 
   <div class="card">
@@ -215,6 +219,7 @@ async function load(){
 
   renderMatches();
   loadStats();
+  loadYesterday(); // 🔥 NEW
 }
 
 window.show = (page)=>{
@@ -298,7 +303,37 @@ function loadStats(){
   document.getElementById("winrate").innerText = wr+"%";
   document.getElementById("profit").innerText = "R"+profit;
 }
+
+// 🔥 YESTERDAY RESULTS
+async function loadYesterday(){
+
+  const yesterday = new Date(Date.now()-86400000)
+    .toISOString().split("T")[0];
+
+  const snap = await get(ref(db,"tips/"+yesterday));
+
+  if(!snap.exists()) return;
+
+  const tips = snap.val();
+
+  let wins=0,losses=0,total=0;
+
+  Object.values(tips).forEach(t=>{
+    if(!t.result) return;
+    total++;
+    if(t.result==="WON") wins++;
+    if(t.result==="LOST") losses++;
+  });
+
+  let rate = total ? ((wins/total)*100).toFixed(1) : 0;
+  let profit = (wins*50)-(losses*50);
+
+  document.getElementById("yWins").innerText = wins;
+  document.getElementById("yLosses").innerText = losses;
+  document.getElementById("yRate").innerText = rate+"%";
+  document.getElementById("yProfit").innerText = "R"+profit;
+}
 </script>
 
 </body>
-  </html>
+</html> 
