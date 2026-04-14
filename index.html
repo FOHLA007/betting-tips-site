@@ -14,7 +14,7 @@ header {background:linear-gradient(135deg,#ffb400,#ff3b3b);padding:20px;text-ali
 .card {background:#121a2a;padding:15px;margin:10px 0;border-radius:12px;}
 .match {border-left:4px solid gold;padding:10px;margin:10px 0;background:#0f1726;border-radius:8px;}
 input,button {width:100%;padding:10px;margin-top:10px;border-radius:8px;border:none;}
-button {background:gold;font-weight:bold;}
+button {background:gold;font-weight:bold;cursor:pointer;}
 .vip-btn {background:#25D366;color:white;}
 footer {text-align:center;padding:15px;font-size:12px;opacity:0.7;}
 </style>
@@ -29,6 +29,7 @@ footer {text-align:center;padding:15px;font-size:12px;opacity:0.7;}
 
 <div class="container">
 
+<!-- VIP LOGIN -->
 <div class="card">
 <h3>💰 VIP Login</h3>
 
@@ -43,6 +44,7 @@ footer {text-align:center;padding:15px;font-size:12px;opacity:0.7;}
 <p id="vipStatus"></p>
 </div>
 
+<!-- MATCHES -->
 <div class="card">
 <h3>⚽ Live Matches</h3>
 <div id="matches">Loading matches...</div>
@@ -58,9 +60,10 @@ footer {text-align:center;padding:15px;font-size:12px;opacity:0.7;}
 document.getElementById("year").innerText = new Date().getFullYear();
 </script>
 
+<!-- FIREBASE + SYSTEM -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp({
   databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
@@ -68,111 +71,117 @@ const app = initializeApp({
 
 const db = getDatabase(app);
 
+const container = document.getElementById("matches");
+
 let vipUnlocked = false;
 
-// 🔥 LOAD MATCHES IMMEDIATELY (IMPORTANT FIX)
+// 🔥 LOAD MATCHES IMMEDIATELY (NO WAITING)
 loadMatches();
 
-// VIP LOGIN
+// 🔐 VIP CHECK
 window.checkVIP = async function(){
 
   const phone = document.getElementById("phone").value;
 
-  const snap = await get(ref(db,"users/"+phone));
+  try {
 
-  if(!snap.exists()){
-    document.getElementById("vipStatus").innerText = "Not VIP ❌";
-    return;
-  }
+    const snap = await get(ref(db,"users/"+phone));
 
-  const user = snap.val();
-
-  if(user.vip && new Date(user.expiry) > new Date()){
-    vipUnlocked = true;
-    document.getElementById("vipStatus").innerText = "VIP ACTIVE 🔥";
-  } else {
-    document.getElementById("vipStatus").innerText = "VIP EXPIRED ❌";
-  }
-};
-
-// LOAD MATCHES (WITH FALLBACK)
-function loadMatches(){
-
-  const today = new Date().toISOString().split("T")[0];
-
-  const todayRef = ref(db,"matches/"+today);
-
-  onValue(todayRef,(snap)=>{
-
-    const data = snap.val();
-
-    if(data){
-      loadTips(data);
-    } else {
-      loadLatest(); // fallback
-    }
-
-  });
-}
-
-// LOAD LATEST IF TODAY EMPTY
-function loadLatest(){
-
-  onValue(ref(db,"matches"),(snap)=>{
-
-    const all = snap.val();
-
-    if(!all){
-      document.getElementById("matches").innerHTML = "No matches found";
+    if(!snap.exists()){
+      document.getElementById("vipStatus").innerText = "Not VIP ❌";
       return;
     }
 
-    const dates = Object.keys(all).sort().reverse();
-    const latest = dates[0];
+    const user = snap.val();
 
-    loadTips(all[latest]);
-  });
+    if(user.vip && new Date(user.expiry) > new Date()){
+      vipUnlocked = true;
+      document.getElementById("vipStatus").innerText = "VIP ACTIVE 🔥";
+    } else {
+      document.getElementById("vipStatus").innerText = "VIP EXPIRED ❌";
+    }
+
+  } catch(e){
+    document.getElementById("vipStatus").innerText = "Error checking VIP";
+  }
+};
+
+// 🔥 MAIN MATCH LOADER (NO REALTIME = NO FREEZE)
+async function loadMatches(){
+
+  try {
+
+    container.innerHTML = "Loading matches...";
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // TRY TODAY
+    let snap = await get(ref(db,"matches/"+today));
+
+    let matchesData = null;
+    let tipsData = {};
+
+    if(snap.exists()){
+      matchesData = snap.val();
+
+      const tipsSnap = await get(ref(db,"tips/"+today));
+      if(tipsSnap.exists()) tipsData = tipsSnap.val();
+
+    } else {
+
+      // 🔥 FALLBACK TO LATEST DATE
+      const allSnap = await get(ref(db,"matches"));
+
+      if(!allSnap.exists()){
+        container.innerHTML = "<p>No matches in database</p>";
+        return;
+      }
+
+      const all = allSnap.val();
+      const dates = Object.keys(all).sort().reverse();
+      const latest = dates[0];
+
+      matchesData = all[latest];
+
+      const tipsSnap = await get(ref(db,"tips/"+latest));
+      if(tipsSnap.exists()) tipsData = tipsSnap.val();
+    }
+
+    render(matchesData, tipsData);
+
+  } catch(e){
+    container.innerHTML = "<p>Error loading matches</p>";
+    console.error(e);
+  }
+
 }
 
-// LOAD TIPS
-function loadTips(matches){
+// 🎯 RENDER
+function render(matches, tips){
 
-  const today = new Date().toISOString().split("T")[0];
+  let html = "";
 
-  onValue(ref(db,"tips/"+today),(snap)=>{
+  Object.values(matches).forEach(m => {
 
-    const tips = snap.val() || {};
-    render(matches,tips);
-
-  });
-}
-
-// RENDER
-function render(matches,tips){
-
-  let html="";
-
-  Object.values(matches).forEach(m=>{
-
-    const key = (m.home+"_"+m.away).replaceAll(" ","_");
+    const key = (m.home + "_" + m.away).replaceAll(" ","_");
     const tip = tips[key];
 
-    html+=`
-    <div class="match">
-      <b>${m.home} vs ${m.away}</b>
-      <p>Score: ${m.score || "0-0"}</p>
-      <p>Status: ${m.status || "pending"}</p>
+    html += `
+      <div class="match">
+        <b>${m.home || "Team A"} vs ${m.away || "Team B"}</b>
+        <p>Score: ${m.score || "0-0"}</p>
+        <p>Status: ${m.status || "pending"}</p>
 
-      ${
-        vipUnlocked
-        ? (tip ? "<p>🔥 TIP: "+tip.tip+"</p>" : "<p>No tip</p>")
-        : "<p>🔒 VIP ONLY</p>"
-      }
-    </div>
+        ${
+          vipUnlocked
+          ? (tip ? "<p>🔥 TIP: "+tip.tip+"</p>" : "<p>No tip</p>")
+          : "<p>🔒 VIP ONLY</p>"
+        }
+      </div>
     `;
   });
 
-  document.getElementById("matches ").innerHTML = html;
+  container.innerHTML = html || "<p>No matches found</p>";
 }
 </script>
 
