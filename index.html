@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FOHLA Betting App</title>
+<title>VIP Betting App</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -103,8 +103,8 @@ button {
 <body>
 
 <div class="header">
-<h2>🔥 FOHLA BETTING APP</h2>
-<p>AI TIPS • LIVE MATCHES • ANALYTICS</p>
+<h2>🔥 VIP Betting App</h2>
+<p>AI Tips • Live Matches • Analytics</p>
 </div>
 
 <!-- HOME -->
@@ -133,10 +133,9 @@ button {
     <p style="color:#ff4d4d;"><b>⚠️ Limited VIP slots available</b></p>
   </div>
 
-  <!-- 🔥 YESTERDAY RESULTS -->
+  <!-- YESTERDAY RESULTS -->
   <div class="card">
     <h3>🔥 Yesterday Results</h3>
-
     <p>✅ Wins: <span id="yWins">0</span></p>
     <p>❌ Losses: <span id="yLosses">0</span></p>
     <p>📊 Win Rate: <span id="yRate">0%</span></p>
@@ -219,7 +218,27 @@ async function load(){
 
   renderMatches();
   loadStats();
-  loadYesterday(); // 🔥 NEW
+  loadYesterday();
+
+  // 🔥 AUTO LOGIN
+  const savedUser = localStorage.getItem("vipUser");
+
+  if(savedUser){
+    const snap = await get(ref(db,"users/"+savedUser));
+
+    if(snap.exists()){
+      const u = snap.val();
+
+      if(u.vip && new Date(u.expiry) > new Date()){
+        vip = true;
+        document.getElementById("status").innerText = "VIP ACTIVE 🔥";
+        loadVIP();
+        renderMatches();
+      } else {
+        localStorage.removeItem("vipUser");
+      }
+    }
+  }
 }
 
 window.show = (page)=>{
@@ -243,12 +262,14 @@ window.checkVIP = async function(){
   if(u.vip && new Date(u.expiry) > new Date()){
     vip = true;
 
+    // SAVE LOGIN
+    localStorage.setItem("vipUser", phone);
+
     document.getElementById("status").innerText = "VIP ACTIVE 🔥";
 
     loadVIP();
-
-    // 🔥 IMPORTANT FIX
-    renderMatches(); // <-- refresh home tips immediately
+    renderMatches();
+    show("home");
 
   } else {
     document.getElementById("status").innerText = "VIP EXPIRED ❌";
@@ -310,7 +331,6 @@ function loadStats(){
   document.getElementById("profit").innerText = "R"+profit;
 }
 
-// 🔥 YESTERDAY RESULTS
 async function loadYesterday(){
 
   const yesterday = new Date(Date.now()-86400000)
@@ -342,4 +362,4 @@ async function loadYesterday(){
 </script>
 
 </body>
-</html> 
+</html>
