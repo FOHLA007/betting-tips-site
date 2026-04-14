@@ -242,8 +242,14 @@ window.checkVIP = async function(){
 
   if(u.vip && new Date(u.expiry) > new Date()){
     vip = true;
+
     document.getElementById("status").innerText = "VIP ACTIVE 🔥";
+
     loadVIP();
+
+    // 🔥 IMPORTANT FIX
+    renderMatches(); // <-- refresh home tips immediately
+
   } else {
     document.getElementById("status").innerText = "VIP EXPIRED ❌";
   }
