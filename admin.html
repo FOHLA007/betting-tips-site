@@ -2,20 +2,52 @@
 <html>
 <head>
 <title>Admin Panel</title>
+
 <style>
-body {font-family:Arial;background:#111;color:white;padding:20px;}
-select,input,button {padding:10px;margin:5px;width:100%;}
-.card {background:#222;padding:15px;margin-top:10px;border-radius:10px;}
+body {
+  font-family: Inter;
+  background: linear-gradient(135deg,#0f172a,#020617);
+  color:white;
+  padding:20px;
+}
+
+.card {
+  background:#111827;
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
+  box-shadow:0 0 20px rgba(0,255,200,0.1);
+}
+
+select,button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
+}
+
+button {
+  background:#00ffcc;
+  font-weight:bold;
+}
+
+h2 {
+  text-align:center;
+}
 </style>
 </head>
+
 <body>
 
-<h2>⚙️ Admin Panel (Smart Select)</h2>
+<h2>⚙️ Admin Dashboard</h2>
 
 <div class="card">
-<h3>Select Match + Tip</h3>
+<h3>Select Match</h3>
 
-<select id="matchSelect"></select>
+<select id="matchSelect">
+<option>Loading matches...</option>
+</select>
 
 <select id="tipSelect">
 <option>Home Win</option>
@@ -28,13 +60,11 @@ select,input,button {padding:10px;margin:5px;width:100%;}
 <option>BTTS NO</option>
 </select>
 
-<input id="odds" placeholder="Odds e.g 1.80">
-
 <button onclick="save()">Save Tip</button>
 </div>
 
 <div class="card">
-<h3>Matches Loaded</h3>
+<h3>Saved Tips</h3>
 <div id="list"></div>
 </div>
 
@@ -52,30 +82,36 @@ const today = new Date().toISOString().split("T")[0];
 
 let matches = {};
 
-// 🔥 LOAD MATCHES FROM FIREBASE
+// 🔥 LOAD MATCHES CORRECTLY
 async function loadMatches(){
 
-const snap = await get(ref(db, "matches/" + today));
+const snap = await get(ref(db,"matches/"+today));
 
-if(!snap.exists()) return;
+let select = document.getElementById("matchSelect");
+
+if(!snap.exists()){
+select.innerHTML = "<option>No matches found</option>";
+return;
+}
 
 matches = snap.val();
 
-let selectHTML = "";
+// FIX OBJECT → ARRAY
+const matchArray = Object.values(matches);
 
-Object.values(matches).forEach(m => {
+let html = "";
+
+matchArray.forEach(m=>{
 
 const key = (m.home + "_" + m.away).replaceAll(" ","_");
 
-selectHTML += `
-<option value="${key}">
+html += `<option value="${key}">
 ${m.home} vs ${m.away} (${m.time || "No time"})
-</option>
-`;
+</option>`;
 
 });
 
-document.getElementById("matchSelect").innerHTML = selectHTML;
+select.innerHTML = html;
 
 loadList();
 }
@@ -85,22 +121,23 @@ async function save(){
 
 const key = document.getElementById("matchSelect").value;
 const tip = document.getElementById("tipSelect").value;
-const odds = document.getElementById("odds").value;
 
-const m = matches[key];
+const m = Object.values(matches).find(x =>
+(m.home+"_"+m.away).replaceAll(" ","_") === key
+);
 
-await set(ref(db, "tips/" + today + "/" + key), {
+await set(ref(db,"tips/"+today+"/"+key),{
 home: m.home,
 away: m.away,
 tip: tip,
-odds: odds,
 status: m.status
 });
 
 alert("Tip Saved!");
+loadList();
 }
 
-// 🔥 DISPLAY LIST
+// 🔥 SHOW SAVED TIPS
 async function loadList(){
 
 const snap = await get(ref(db,"tips/"+today));
@@ -108,9 +145,7 @@ const snap = await get(ref(db,"tips/"+today));
 let html = "";
 
 if(snap.exists()){
-const data = snap.val();
-
-Object.values(data).forEach(t=>{
+Object.values(snap.val()).forEach(t=>{
 html += `<p>🔥 ${t.home} vs ${t.away} → ${t.tip}</p>`;
 });
 }
@@ -118,7 +153,7 @@ html += `<p>🔥 ${t.home} vs ${t.away} → ${t.tip}</p>`;
 document.getElementById("list").innerHTML = html;
 }
 
-loadMat ches();
+loadMatches();
 </script>
 
 </body>
