@@ -232,7 +232,7 @@ async function load(){
   }
 }
 
-setInterval(load,600000); // AUTO REFRESH
+setInterval(load,60000); // AUTO REFRESH
 
 window.show=(p)=>{
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
@@ -268,14 +268,12 @@ document.getElementById("status").innerText="VIP EXPIRED ❌";
 }
 };
 
-function renderMatches(){
-
-let html="";
-
 Object.values(matches).forEach(m=>{
 
 const key=(m.home+"_"+m.away).replaceAll(" ","_");
-const tip=tips[key];
+
+// ONLY SHOW IF ADMIN CREATED OR HAS TIP
+if(!tips[key]) return;
 
 let statusColor="";
 let statusText=m.status;
