@@ -97,6 +97,17 @@ button {
   font-weight:bold;
 }
 
+/* 🔥 NEW: LIVE ANIMATION */
+.live {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity:1; }
+  50% { opacity:0.3; }
+  100% { opacity:1; }
+}
+
 </style>
 </head>
 
@@ -221,7 +232,8 @@ loadYesterday();
 checkAutoLogin();
 }
 
-setInterval(load,60000); // 🔥 FAST UPDATE
+// 🔥 UPDATED SPEED (LIVE FEEL)
+setInterval(load,15000);
 
 // NAV
 window.show=(p)=>{
@@ -282,19 +294,30 @@ let html="";
 
 Object.values(matches).forEach(m=>{
 
+// 🔥 REMOVE OLD FINISHED MATCHES
+if(m.status === "FINISHED") return;
+
 const key=(m.home+"_"+m.away).replaceAll(" ","_");
 const tip=tips[key];
 
-// SHOW ONLY ADMIN CONTROLLED MATCHES
 if(!tip) return;
 
+// 🔥 STATUS FIX + COLORS
 let statusColor="";
-let statusText = "";
+let statusText="";
 
-if(m.status === "IN_PLAY") statusText = "🔴 LIVE";
-else if(m.status === "PAUSED") statusText = "⏸ HALF TIME";
-else if(m.status === "FINISHED") statusText = "✅ FT";
-else statusText = "⏳ " + m.time;
+if(m.status === "IN_PLAY"){
+  statusText = "<span class='live'>🔴 LIVE</span>";
+  statusColor = "#ff4d4d";
+}
+else if(m.status === "PAUSED"){
+  statusText = "⏸ HALF TIME";
+  statusColor = "#ffd700";
+}
+else{
+  statusText = "⏳ " + (m.time || "TBD");
+  statusColor = "#00d4ff";
+}
 
 html+=`
 <div class="match">
@@ -304,7 +327,7 @@ html+=`
 ${statusText}
 </span><br>
 
-<span style="font-size:18px;">
+<span style="font-size:22px;font-weight:bold;">
 ${m.score}
 </span><br>
 
@@ -387,4 +410,4 @@ load();
 </script>
 
 </body>
-  </html>
+</html> 
