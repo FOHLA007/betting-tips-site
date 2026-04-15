@@ -19,7 +19,7 @@ body {
   box-shadow:0 0 20px rgba(0,255,200,0.1);
 }
 
-select,button {
+select,input,button {
   width:100%;
   padding:12px;
   margin-top:10px;
@@ -42,12 +42,22 @@ h2 {
 
 <h2>⚙️ Admin Dashboard</h2>
 
+<!-- VIP SECTION -->
 <div class="card">
-<h3>Select Match</h3>
+<h3>💎 Add VIP User</h3>
 
-<select id="matchSelect">
-<option>Loading matches...</option>
-</select>
+<input id="vipPhone" placeholder="Enter phone number">
+
+<button onclick="addVIP()">Activate VIP (7 Days)</button>
+
+<p id="vipMsg"></p>
+</div>
+
+<!-- MATCH + TIP -->
+<div class="card">
+<h3>⚽ Select Match</h3>
+
+<select id="matchSelect"></select>
 
 <select id="tipSelect">
 <option>Home Win</option>
@@ -60,11 +70,12 @@ h2 {
 <option>BTTS NO</option>
 </select>
 
-<button onclick="save()">Save Tip</button>
+<button onclick="saveTip()">Save Tip</button>
 </div>
 
+<!-- VIEW -->
 <div class="card">
-<h3>Saved Tips</h3>
+<h3>🔥 Saved Tips</h3>
 <div id="list"></div>
 </div>
 
@@ -82,42 +93,58 @@ const today = new Date().toISOString().split("T")[0];
 
 let matches = {};
 
-// 🔥 LOAD MATCHES CORRECTLY
+// 🔥 ADD VIP USER
+window.addVIP = async function(){
+
+const phone = document.getElementById("vipPhone").value;
+
+if(!phone){
+document.getElementById("vipMsg").innerText="Enter phone ❌";
+return;
+}
+
+// expiry = 7 days
+const expiryDate = new Date();
+expiryDate.setDate(expiryDate.getDate()+7);
+
+await set(ref(db,"users/"+phone),{
+vip:true,
+expiry: expiryDate.toISOString()
+});
+
+document.getElementById("vipMsg").innerText="VIP ACTIVATED ✅";
+};
+
+// 🔥 LOAD MATCHES
 async function loadMatches(){
 
 const snap = await get(ref(db,"matches/"+today));
 
-let select = document.getElementById("matchSelect");
-
 if(!snap.exists()){
-select.innerHTML = "<option>No matches found</option>";
+document.getElementById("matchSelect").innerHTML="<option>No matches</option>";
 return;
 }
 
 matches = snap.val();
 
-// FIX OBJECT → ARRAY
-const matchArray = Object.values(matches);
+let html="";
 
-let html = "";
+Object.values(matches).forEach(m=>{
 
-matchArray.forEach(m=>{
-
-const key = (m.home + "_" + m.away).replaceAll(" ","_");
+const key=(m.home+"_"+m.away).replaceAll(" ","_");
 
 html += `<option value="${key}">
 ${m.home} vs ${m.away} (${m.time || "No time"})
 </option>`;
-
 });
 
-select.innerHTML = html;
+document.getElementById("matchSelect").innerHTML = html;
 
-loadList();
+loadTips();
 }
 
 // 🔥 SAVE TIP
-async function save(){
+window.saveTip = async function(){
 
 const key = document.getElementById("matchSelect").value;
 const tip = document.getElementById("tipSelect").value;
@@ -127,22 +154,22 @@ const m = Object.values(matches).find(x =>
 );
 
 await set(ref(db,"tips/"+today+"/"+key),{
-home: m.home,
-away: m.away,
-tip: tip,
-status: m.status
+home:m.home,
+away:m.away,
+tip:tip,
+status:m.status
 });
 
 alert("Tip Saved!");
-loadList();
-}
+loadTips();
+};
 
-// 🔥 SHOW SAVED TIPS
-async function loadList(){
+// 🔥 LOAD SAVED TIPS
+async function loadTips(){
 
 const snap = await get(ref(db,"tips/"+today));
 
-let html = "";
+let html="";
 
 if(snap.exists()){
 Object.values(snap.val()).forEach(t=>{
@@ -157,4 +184,4 @@ loadMatches();
 </script>
 
 </body>
-  </html>
+  </html> 
