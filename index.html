@@ -97,7 +97,6 @@ button {
   font-weight:bold;
 }
 
-/* 🔥 NEW: LIVE ANIMATION */
 .live {
   animation: pulse 1s infinite;
 }
@@ -118,7 +117,6 @@ button {
 <p>AI TIPS • LIVE MATCHES • PREMIUM ANALYTICS</p>
 </div>
 
-<!-- HOME -->
 <div class="page active" id="home">
 
 <div class="card">
@@ -156,7 +154,6 @@ button {
 
 </div>
 
-<!-- VIP -->
 <div class="page" id="vip">
 
 <div class="card">
@@ -176,7 +173,6 @@ button {
 
 </div>
 
-<!-- STATS -->
 <div class="page" id="stats">
 
 <div class="card">
@@ -193,7 +189,6 @@ button {
 
 </div>
 
-<!-- NAV -->
 <div class="nav">
 <button onclick="show('home')">🏠 Home</button>
 <button onclick="show('vip')">🔐 VIP</button>
@@ -217,9 +212,7 @@ let tips={};
 
 const today=new Date().toISOString().split("T")[0];
 
-// LOAD DATA
 async function load(){
-
 const mSnap=await get(ref(db,"matches/"+today));
 const tSnap=await get(ref(db,"tips/"+today));
 
@@ -232,20 +225,15 @@ loadYesterday();
 checkAutoLogin();
 }
 
-// 🔥 UPDATED SPEED (LIVE FEEL)
 setInterval(load,15000);
 
-// NAV
 window.show=(p)=>{
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById(p).classList.add("active");
 };
 
-// VIP LOGIN
 window.checkVIP=async function(){
-
 const phone=document.getElementById("phone").value;
-
 const snap=await get(ref(db,"users/"+phone));
 
 if(!snap.exists()){
@@ -267,14 +255,11 @@ document.getElementById("status").innerText="VIP EXPIRED ❌";
 }
 };
 
-// AUTO LOGIN
 async function checkAutoLogin(){
-
 const saved=localStorage.getItem("vipUser");
 if(!saved) return;
 
 const snap=await get(ref(db,"users/"+saved));
-
 if(!snap.exists()) return;
 
 const u=snap.val();
@@ -287,37 +272,48 @@ renderMatches();
 }
 }
 
-// MATCHES UI
 function renderMatches(){
 
 let html="";
 
 Object.values(matches).forEach(m=>{
 
-// 🔥 REMOVE OLD FINISHED MATCHES
-if(m.status === "FINISHED") return;
-
 const key=(m.home+"_"+m.away).replaceAll(" ","_");
 const tip=tips[key];
 
 if(!tip) return;
 
-// 🔥 STATUS FIX + COLORS
+// 🔥 SMART STATUS SYSTEM
 let statusColor="";
 let statusText="";
 
-if(m.status === "IN_PLAY"){
-  statusText = "<span class='live'>🔴 LIVE</span>";
-  statusColor = "#ff4d4d";
+const now = new Date();
+const matchTime = m.time ? new Date(`${today}T${m.time}:00`) : null;
+
+let minutesPassed = 0;
+if(matchTime){
+minutesPassed = Math.floor((now - matchTime) / 60000);
 }
-else if(m.status === "PAUSED"){
+
+if(m.score !== "0-0" && minutesPassed > 110){
+  statusText = "✅ FT";
+  statusColor = "#00ff88";
+}
+else if(minutesPassed > 45 && minutesPassed < 60){
   statusText = "⏸ HALF TIME";
   statusColor = "#ffd700";
+}
+else if(minutesPassed >= 0 && minutesPassed <= 110){
+  statusText = "<span class='live'>🔴 LIVE</span>";
+  statusColor = "#ff4d4d";
 }
 else{
   statusText = "⏳ " + (m.time || "TBD");
   statusColor = "#00d4ff";
 }
+
+// remove very old matches
+if(minutesPassed > 180) return;
 
 html+=`
 <div class="match">
@@ -341,13 +337,10 @@ ${vip ? "🔥 "+tip.tip : "🔒 VIP ONLY"}
 document.getElementById("matches").innerHTML=html;
 }
 
-// VIP TIPS
 function loadVIP(){
-
 document.getElementById("vipTips").style.display="block";
 
 let html="";
-
 Object.values(tips).forEach(t=>{
 html+=`<p>🔥 ${t.home} vs ${t.away} → ${t.tip} (${t.result || "PENDING"})</p>`;
 });
@@ -355,9 +348,7 @@ html+=`<p>🔥 ${t.home} vs ${t.away} → ${t.tip} (${t.result || "PENDING"})</p
 document.getElementById("tips").innerHTML=html;
 }
 
-// STATS
 function loadStats(){
-
 let wins=0,losses=0,total=0;
 
 Object.values(tips).forEach(t=>{
@@ -376,11 +367,8 @@ document.getElementById("winrate").innerText=wr+"%";
 document.getElementById("profit").innerText="R"+profit;
 }
 
-// YESTERDAY
 async function loadYesterday(){
-
 const y=new Date(Date.now()-86400000).toISOString().split("T")[0];
-
 const snap=await get(ref(db,"tips/"+y));
 
 if(!snap.exists()) return;
