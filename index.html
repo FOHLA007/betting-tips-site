@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VIP Betting App</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOHLA BETTING APP</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
@@ -16,9 +17,10 @@ body {
 }
 
 .header {
-  text-align:center;
   padding:20px;
+  text-align:center;
   background:linear-gradient(135deg,#1a2a6c,#0f172a);
+  box-shadow:0 0 20px rgba(0,255,200,0.2);
 }
 
 .nav {
@@ -35,34 +37,56 @@ body {
   flex:1;
   margin:5px;
   padding:14px;
-  border:none;
   border-radius:12px;
+  border:none;
   background:#111827;
   color:white;
+  font-size:16px;
   font-weight:bold;
 }
 
-.page { display:none; padding:15px; padding-bottom:100px; }
+.page {
+  display:none;
+  padding:15px;
+  padding-bottom:100px;
+}
+
 .active { display:block; }
 
 .card {
   background:#111827;
   padding:15px;
-  border-radius:12px;
-  margin-bottom:10px;
+  border-radius:14px;
+  margin-bottom:12px;
+  box-shadow:0 0 20px rgba(0,255,200,0.08);
 }
 
 .match {
-  background:#020617;
+  background: linear-gradient(135deg,#020617,#0f172a);
   padding:15px;
   border-radius:12px;
   margin-top:10px;
   border-left:4px solid #00ffcc;
+  box-shadow:0 0 15px rgba(0,255,200,0.1);
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.stat {
+  background:#020617;
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
 }
 
 .green {color:#00ff88;}
 .red {color:#ff4d4d;}
 .gold {color:#ffd700;}
+.blue {color:#00d4ff;}
 
 button {
   width:100%;
@@ -79,55 +103,81 @@ button {
 <body>
 
 <div class="header">
-<h2>🔥 VIP Betting App</h2>
-<p>Live Matches • AI Tips • Premium Access</p>
+<h2>🔥 FOHLA BETTING TIPS</h2>
+<p>AI TIPS • LIVE MATCHES • PREMIUM ANALYTICS</p>
 </div>
 
 <!-- HOME -->
-<div id="home" class="page active">
+<div class="page active" id="home">
 
 <div class="card">
 <h3>💎 VIP ACCESS</h3>
-<p>R50 per week</p>
+
+<p><b>💰 Price:</b> R50/week</p>
 
 <p>
 1. Make payment<br>
-2. Send proof<br>
-3. Get VIP access
+2. Send proof on WhatsApp<br>
+3. Get instant VIP access
 </p>
 
-<a href="https://wa.me/27655775885?text=I want VIP">
-<button style="background:#25D366;color:white;">Join via WhatsApp</button>
+<a href="https://wa.me/27655775885?text=Hi%20I%20want%20VIP" target="_blank">
+<button style="background:#25D366;color:white;">
+💬 Join VIP via WhatsApp
+</button>
 </a>
 
-<p style="color:gold;">⚠️ No refunds</p>
+<p class="gold"><b>⚠️ No refunds after activation</b></p>
+</div>
+
+<div class="card">
+<h3>📊 Yesterday Performance</h3>
+<p>Wins: <span id="yWins">0</span></p>
+<p>Losses: <span id="yLosses">0</span></p>
+<p>Win Rate: <span id="yRate">0%</span></p>
+<p>Profit: <span id="yProfit">R0</span></p>
 </div>
 
 <div class="card">
 <h3>⚽ Matches</h3>
-<div id="matches">Loading...</div>
+<div id="matches">Loading matches...</div>
 </div>
 
 </div>
 
 <!-- VIP -->
-<div id="vip" class="page">
+<div class="page" id="vip">
 
 <div class="card">
 <h3>🔐 VIP LOGIN</h3>
 
-<input id="phone" placeholder="Enter phone number">
+<input id="phone" placeholder="Enter phone number" style="width:100%;padding:12px;border-radius:10px;border:none;margin-top:10px;">
 
-<button onclick="login()">Unlock VIP</button>
+<button onclick="checkVIP()">Unlock VIP</button>
 
-<p id="msg"></p>
+<p id="status"></p>
 </div>
 
-<div id="vipBox" style="display:none;">
-<div class="card">
-<h3>🔥 VIP Tips</h3>
+<div class="card" id="vipTips" style="display:none;">
+<h3>🔥 VIP TIPS</h3>
 <div id="tips"></div>
 </div>
+
+</div>
+
+<!-- STATS -->
+<div class="page" id="stats">
+
+<div class="card">
+<h3>📊 FULL ANALYTICS</h3>
+
+<div class="grid">
+<div class="stat"><h2 id="wins" class="green">0</h2><p>Wins</p></div>
+<div class="stat"><h2 id="losses" class="red">0</h2><p>Losses</p></div>
+<div class="stat"><h2 id="winrate" class="gold">0%</h2><p>Win Rate</p></div>
+<div class="stat"><h2 id="profit" class="blue">R0</h2><p>Profit</p></div>
+</div>
+
 </div>
 
 </div>
@@ -136,6 +186,7 @@ button {
 <div class="nav">
 <button onclick="show('home')">🏠 Home</button>
 <button onclick="show('vip')">🔐 VIP</button>
+<button onclick="show('stats')">📊 Analytics</button>
 </div>
 
 <script type="module">
@@ -144,15 +195,33 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp({
-databaseURL:"https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
+  databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
 });
 
 const db = getDatabase(app);
 
 let vip=false;
-let matches={}, tips={};
+let matches={};
+let tips={};
 
 const today=new Date().toISOString().split("T")[0];
+
+// LOAD DATA
+async function load(){
+
+const mSnap=await get(ref(db,"matches/"+today));
+const tSnap=await get(ref(db,"tips/"+today));
+
+if(mSnap.exists()) matches=mSnap.val();
+if(tSnap.exists()) tips=tSnap.val();
+
+renderMatches();
+loadStats();
+loadYesterday();
+checkAutoLogin();
+}
+
+setInterval(load,60000); // 🔥 FAST UPDATE
 
 // NAV
 window.show=(p)=>{
@@ -160,22 +229,54 @@ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById(p).classList.add("active");
 };
 
-// LOAD DATA
-async function load(){
+// VIP LOGIN
+window.checkVIP=async function(){
 
-const m=await get(ref(db,"matches/"+today));
-const t=await get(ref(db,"tips/"+today));
+const phone=document.getElementById("phone").value;
 
-if(m.exists()) matches=m.val();
-if(t.exists()) tips=t.val();
+const snap=await get(ref(db,"users/"+phone));
 
-render();
+if(!snap.exists()){
+document.getElementById("status").innerText="Not VIP ❌";
+return;
 }
 
-setInterval(load,60000);
+const u=snap.val();
 
-// RENDER
-function render(){
+if(u.vip && new Date(u.expiry)>new Date()){
+vip=true;
+localStorage.setItem("vipUser",phone);
+document.getElementById("status").innerText="VIP ACTIVE 🔥";
+loadVIP();
+renderMatches();
+show("home");
+}else{
+document.getElementById("status").innerText="VIP EXPIRED ❌";
+}
+};
+
+// AUTO LOGIN
+async function checkAutoLogin(){
+
+const saved=localStorage.getItem("vipUser");
+if(!saved) return;
+
+const snap=await get(ref(db,"users/"+saved));
+
+if(!snap.exists()) return;
+
+const u=snap.val();
+
+if(u.vip && new Date(u.expiry)>new Date()){
+vip=true;
+document.getElementById("status").innerText="VIP ACTIVE 🔥";
+loadVIP();
+renderMatches();
+}
+}
+
+// MATCHES UI
+function renderMatches(){
 
 let html="";
 
@@ -184,20 +285,32 @@ Object.values(matches).forEach(m=>{
 const key=(m.home+"_"+m.away).replaceAll(" ","_");
 const tip=tips[key];
 
+// SHOW ONLY ADMIN CONTROLLED MATCHES
 if(!tip) return;
 
-let status="";
+let statusColor="";
+let statusText = "";
 
-if(m.status==="IN_PLAY") status="<span class='red'>🔴 LIVE</span>";
-else if(m.status==="FINISHED") status="<span class='green'>FT</span>";
-else status="<span class='gold'>"+m.time+"</span>";
+if(m.status === "IN_PLAY") statusText = "🔴 LIVE";
+else if(m.status === "PAUSED") statusText = "⏸ HALF TIME";
+else if(m.status === "FINISHED") statusText = "✅ FT";
+else statusText = "⏳ " + m.time;
 
 html+=`
 <div class="match">
 <b>${m.home} vs ${m.away}</b><br>
-${status}<br>
-Score: ${m.score}<br>
+
+<span style="color:${statusColor};font-weight:bold;">
+${statusText}
+</span><br>
+
+<span style="font-size:18px;">
+${m.score}
+</span><br>
+
+<p>
 ${vip ? "🔥 "+tip.tip : "🔒 VIP ONLY"}
+</p>
 </div>
 `;
 });
@@ -205,60 +318,68 @@ ${vip ? "🔥 "+tip.tip : "🔒 VIP ONLY"}
 document.getElementById("matches").innerHTML=html;
 }
 
-// LOGIN
-window.login=async function(){
-
-const phone=document.getElementById("phone").value;
-
-const snap=await get(ref(db,"users/"+phone));
-
-if(!snap.exists()){
-document.getElementById("msg").innerText="Not VIP";
-return;
-}
-
-const u=snap.val();
-
-if(u.vip && new Date(u.expiry)>new Date()){
-vip=true;
-localStorage.setItem("vip",phone);
-document.getElementById("msg").innerText="VIP ACTIVE";
-loadVIP();
-render();
-}else{
-document.getElementById("msg").innerText="Expired";
-}
-};
-
-// AUTO LOGIN
-(async ()=>{
-const saved=localStorage.getItem("vip");
-if(!saved) return;
-
-const snap=await get(ref(db,"users/"+saved));
-if(!snap.exists()) return;
-
-const u=snap.val();
-
-if(u.vip && new Date(u.expiry)>new Date()){
-vip=true;
-loadVIP();
-render();
-}
-})();
-
 // VIP TIPS
 function loadVIP(){
 
-document.getElementById("vipBox").style.display="block";
+document.getElementById("vipTips").style.display="block";
 
 let html="";
 
 Object.values(tips).forEach(t=>{
-html+=`<p>${t.home} vs ${t.away} → ${t.tip}</p>`;
+html+=`<p>🔥 ${t.home} vs ${t.away} → ${t.tip} (${t.result || "PENDING"})</p>`;
 });
 
 document.getElementById("tips").innerHTML=html;
+}
+
+// STATS
+function loadStats(){
+
+let wins=0,losses=0,total=0;
+
+Object.values(tips).forEach(t=>{
+if(!t.result) return;
+total++;
+if(t.result==="WON") wins++;
+if(t.result==="LOST") losses++;
+});
+
+let wr=total?((wins/total)*100).toFixed(1):0;
+let profit=(wins*50)-(losses*50);
+
+document.getElementById("wins").innerText=wins;
+document.getElementById("losses").innerText=losses;
+document.getElementById("winrate").innerText=wr+"%";
+document.getElementById("profit").innerText="R"+profit;
+}
+
+// YESTERDAY
+async function loadYesterday(){
+
+const y=new Date(Date.now()-86400000).toISOString().split("T")[0];
+
+const snap=await get(ref(db,"tips/"+y));
+
+if(!snap.exists()) return;
+
+const data=snap.val();
+
+let wins=0,losses=0,total=0;
+
+Object.values(data).forEach(t=>{
+if(!t.result) return;
+total++;
+if(t.result==="WON") wins++;
+if(t.result==="LOST") losses++;
+});
+
+let rate=total?((wins/total)*100).toFixed(1):0;
+let profit=(wins*50)-(losses*50);
+
+document.getElementById("yWins").innerText=wins;
+document.getElementById("yLosses").innerText=losses;
+document.getElementById("yRate").innerText=rate+"%";
+document.getElementById("yProfit").innerText="R"+profit;
 }
 
 load();
@@ -266,4 +387,4 @@ load();
 </script>
 
 </body>
-</html>
+  </html>
