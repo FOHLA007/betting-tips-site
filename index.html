@@ -3,22 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FOHLA Betting APP</title>
+<title>FOHLA BETTING APP</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
+
 body {
   margin:0;
   font-family:Inter;
-  background:#0b0f1a;
+  background: linear-gradient(135deg,#020617,#0f172a);
   color:white;
 }
 
 .header {
-  padding:18px;
+  padding:20px;
   text-align:center;
   background:linear-gradient(135deg,#1a2a6c,#0f172a);
+  box-shadow:0 0 20px rgba(0,255,200,0.2);
 }
 
 .nav {
@@ -26,15 +28,16 @@ body {
   bottom:0;
   width:100%;
   display:flex;
-  background:#0f172a;
+  background:#020617;
   padding:10px;
+  z-index:9999;
 }
 
 .nav button {
   flex:1;
   margin:5px;
   padding:14px;
-  border-radius:10px;
+  border-radius:12px;
   border:none;
   background:#111827;
   color:white;
@@ -45,7 +48,7 @@ body {
 .page {
   display:none;
   padding:15px;
-  padding-bottom:90px;
+  padding-bottom:100px;
 }
 
 .active { display:block; }
@@ -53,16 +56,18 @@ body {
 .card {
   background:#111827;
   padding:15px;
-  border-radius:12px;
+  border-radius:14px;
   margin-bottom:12px;
+  box-shadow:0 0 20px rgba(0,255,200,0.08);
 }
 
 .match {
-  background:#0f172a;
-  padding:12px;
-  border-radius:10px;
+  background: linear-gradient(135deg,#020617,#0f172a);
+  padding:15px;
+  border-radius:12px;
   margin-top:10px;
-  border-left:3px solid #00ffcc;
+  border-left:4px solid #00ffcc;
+  box-shadow:0 0 15px rgba(0,255,200,0.1);
 }
 
 .grid {
@@ -72,9 +77,9 @@ body {
 }
 
 .stat {
-  background:#0f172a;
+  background:#020617;
   padding:12px;
-  border-radius:10px;
+  border-radius:12px;
   text-align:center;
 }
 
@@ -85,12 +90,13 @@ body {
 
 button {
   width:100%;
-  padding:10px;
+  padding:12px;
   border:none;
-  border-radius:8px;
+  border-radius:10px;
   background:#00ffcc;
   font-weight:bold;
 }
+
 </style>
 </head>
 
@@ -98,27 +104,26 @@ button {
 
 <div class="header">
 <h2>🔥 FOHLA BETTING APP</h2>
-<p>AI TIPS • LIVE MATCHES • ANALYTICS</p>
+<p>AI TIPS • LIVE MATCHES • PREMIUM ANALYTICS</p>
 </div>
 
 <!-- HOME -->
 <div class="page active" id="home">
 
 <div class="card">
-<h3>📢 VIP ACCESS</h3>
+<h3>💎 VIP ACCESS</h3>
 
 <p><b>💰 Price:</b> R50/week</p>
 
 <p>
-📲 Join VIP:<br>
-1. Pay<br>
-2. Send proof<br>
-3. Get activated
+1. Make payment<br>
+2. Send proof on WhatsApp<br>
+3. Get instant VIP access
 </p>
 
 <a href="https://wa.me/27655775885?text=Hi%20I%20want%20VIP" target="_blank">
 <button style="background:#25D366;color:white;">
-💬 Join via WhatsApp
+💬 Join VIP via WhatsApp
 </button>
 </a>
 
@@ -126,7 +131,7 @@ button {
 </div>
 
 <div class="card">
-<h3>🔥 Yesterday Results</h3>
+<h3>📊 Yesterday Performance</h3>
 <p>Wins: <span id="yWins">0</span></p>
 <p>Losses: <span id="yLosses">0</span></p>
 <p>Win Rate: <span id="yRate">0%</span></p>
@@ -135,7 +140,7 @@ button {
 
 <div class="card">
 <h3>⚽ Matches</h3>
-<div id="matches">Loading...</div>
+<div id="matches">Loading matches...</div>
 </div>
 
 </div>
@@ -144,14 +149,17 @@ button {
 <div class="page" id="vip">
 
 <div class="card">
-<h3>🔐 VIP Login</h3>
-<input id="phone" placeholder="Phone number" style="width:100%;padding:10px;">
+<h3>🔐 VIP LOGIN</h3>
+
+<input id="phone" placeholder="Enter phone number" style="width:100%;padding:12px;border-radius:10px;border:none;margin-top:10px;">
+
 <button onclick="checkVIP()">Unlock VIP</button>
+
 <p id="status"></p>
 </div>
 
 <div class="card" id="vipTips" style="display:none;">
-<h3>🔥 VIP Tips</h3>
+<h3>🔥 VIP TIPS</h3>
 <div id="tips"></div>
 </div>
 
@@ -161,7 +169,7 @@ button {
 <div class="page" id="stats">
 
 <div class="card">
-<h3>📊 Performance</h3>
+<h3>📊 FULL ANALYTICS</h3>
 
 <div class="grid">
 <div class="stat"><h2 id="wins" class="green">0</h2><p>Wins</p></div>
@@ -176,12 +184,13 @@ button {
 
 <!-- NAV -->
 <div class="nav">
-<button onclick="show('home')">🏠 HOME</button>
+<button onclick="show('home')">🏠 Home</button>
 <button onclick="show('vip')">🔐 VIP</button>
-<button onclick="show('stats')">📊 STATS</button>
+<button onclick="show('stats')">📊 Analytics</button>
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -197,48 +206,30 @@ let tips={};
 
 const today=new Date().toISOString().split("T")[0];
 
-load();
-
+// LOAD DATA
 async function load(){
 
-  const m=await get(ref(db,"matches/"+today));
-  const t=await get(ref(db,"tips/"+today));
+const mSnap=await get(ref(db,"matches/"+today));
+const tSnap=await get(ref(db,"tips/"+today));
 
-  if(m.exists()) matches=m.val();
-  if(t.exists()) tips=t.val();
+if(mSnap.exists()) matches=mSnap.val();
+if(tSnap.exists()) tips=tSnap.val();
 
-  renderMatches();
-  loadStats();
-  loadYesterday();
-
-  // AUTO LOGIN
-  const savedUser=localStorage.getItem("vipUser");
-
-  if(savedUser){
-    const snap=await get(ref(db,"users/"+savedUser));
-
-    if(snap.exists()){
-      const u=snap.val();
-
-      if(u.vip && new Date(u.expiry)>new Date()){
-        vip=true;
-        document.getElementById("status").innerText="VIP ACTIVE 🔥";
-        loadVIP();
-        renderMatches();
-      }else{
-        localStorage.removeItem("vipUser");
-      }
-    }
-  }
+renderMatches();
+loadStats();
+loadYesterday();
+checkAutoLogin();
 }
 
-setInterval(load,60000); // AUTO REFRESH
+setInterval(load,60000); // 🔥 FAST UPDATE
 
+// NAV
 window.show=(p)=>{
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.getElementById(p).classList.add("active");
 };
 
+// VIP LOGIN
 window.checkVIP=async function(){
 
 const phone=document.getElementById("phone").value;
@@ -254,26 +245,48 @@ const u=snap.val();
 
 if(u.vip && new Date(u.expiry)>new Date()){
 vip=true;
-
 localStorage.setItem("vipUser",phone);
-
 document.getElementById("status").innerText="VIP ACTIVE 🔥";
-
 loadVIP();
 renderMatches();
 show("home");
-
 }else{
 document.getElementById("status").innerText="VIP EXPIRED ❌";
 }
 };
 
+// AUTO LOGIN
+async function checkAutoLogin(){
+
+const saved=localStorage.getItem("vipUser");
+if(!saved) return;
+
+const snap=await get(ref(db,"users/"+saved));
+
+if(!snap.exists()) return;
+
+const u=snap.val();
+
+if(u.vip && new Date(u.expiry)>new Date()){
+vip=true;
+document.getElementById("status").innerText="VIP ACTIVE 🔥";
+loadVIP();
+renderMatches();
+}
+}
+
+// MATCHES UI
+function renderMatches(){
+
+let html="";
+
 Object.values(matches).forEach(m=>{
 
 const key=(m.home+"_"+m.away).replaceAll(" ","_");
+const tip=tips[key];
 
-// ONLY SHOW IF ADMIN CREATED OR HAS TIP
-if(!tips[key]) return;
+// SHOW ONLY ADMIN CONTROLLED MATCHES
+if(!tip) return;
 
 let statusColor="";
 let statusText=m.status;
@@ -304,7 +317,7 @@ ${m.score}
 </span><br>
 
 <p>
-${vip ? (tip ? "🔥 "+tip.tip : "No tip") : "🔒 VIP ONLY"}
+${vip ? "🔥 "+tip.tip : "🔒 VIP ONLY"}
 </p>
 </div>
 `;
@@ -313,6 +326,7 @@ ${vip ? (tip ? "🔥 "+tip.tip : "No tip") : "🔒 VIP ONLY"}
 document.getElementById("matches").innerHTML=html;
 }
 
+// VIP TIPS
 function loadVIP(){
 
 document.getElementById("vipTips").style.display="block";
@@ -320,13 +334,13 @@ document.getElementById("vipTips").style.display="block";
 let html="";
 
 Object.values(tips).forEach(t=>{
-if(!t.tip) return;
-html+=`<p>🔥 ${t.tip} (${t.result || "PENDING"})</p>`;
+html+=`<p>🔥 ${t.home} vs ${t.away} → ${t.tip} (${t.result || "PENDING"})</p>`;
 });
 
 document.getElementById("tips").innerHTML=html;
 }
 
+// STATS
 function loadStats(){
 
 let wins=0,losses=0,total=0;
@@ -347,6 +361,7 @@ document.getElementById("winrate").innerText=wr+"%";
 document.getElementById("profit").innerText="R"+profit;
 }
 
+// YESTERDAY
 async function loadYesterday(){
 
 const y=new Date(Date.now()-86400000).toISOString().split("T")[0];
@@ -355,11 +370,11 @@ const snap=await get(ref(db,"tips/"+y));
 
 if(!snap.exists()) return;
 
-const tips=snap.val();
+const data=snap.val();
 
 let wins=0,losses=0,total=0;
 
-Object.values(tips).forEach(t=>{
+Object.values(data).forEach(t=>{
 if(!t.result) return;
 total++;
 if(t.result==="WON") wins++;
@@ -374,7 +389,10 @@ document.getElementById("yLosses").innerText=losses;
 document.getElementById("yRate").innerText=rate+"%";
 document.getElementById("yProfit").innerText="R"+profit;
 }
+
+load();
+
 </script>
 
 </body>
-</html>
+</html> 
