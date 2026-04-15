@@ -281,7 +281,6 @@ Object.values(matches).forEach(m=>{
 const key=(m.home+"_"+m.away).replaceAll(" ","_");
 const tip=tips[key];
 
-if(!tip) return;
 
 // 🔥 SMART STATUS SYSTEM
 let statusColor="";
@@ -328,7 +327,10 @@ ${m.score}
 </span><br>
 
 <p>
-${vip ? "🔥 "+tip.tip : "🔒 VIP ONLY"}
+${tip 
+  ? (vip ? "🔥 "+tip.tip : "🔒 VIP ONLY") 
+  : "⏳ Tip coming..."
+  }
 </p>
 </div>
 `;
