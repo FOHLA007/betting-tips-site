@@ -4,42 +4,43 @@
 <title>Admin Panel</title>
 <style>
 body {font-family:Arial;background:#111;color:white;padding:20px;}
-input,select,button {padding:10px;margin:5px;width:100%;}
+select,input,button {padding:10px;margin:5px;width:100%;}
 .card {background:#222;padding:15px;margin-top:10px;border-radius:10px;}
 </style>
 </head>
 <body>
 
-<h2>⚙️ Admin Panel</h2>
+<h2>⚙️ Admin Panel (Smart Select)</h2>
 
 <div class="card">
-<h3>Add Match + Tip</h3>
+<h3>Select Match + Tip</h3>
 
-<input id="home" placeholder="Home Team">
-<input id="away" placeholder="Away Team">
+<select id="matchSelect"></select>
 
-<select id="status">
-<option value="TIMED">TIMED</option>
-<option value="IN_PLAY">IN PLAY</option>
-<option value="FINISHED">FINISHED</option>
+<select id="tipSelect">
+<option>Home Win</option>
+<option>Away Win</option>
+<option>Draw</option>
+<option>Over 1.5</option>
+<option>Over 2.5</option>
+<option>Under 2.5</option>
+<option>BTTS YES</option>
+<option>BTTS NO</option>
 </select>
 
-<input id="time" placeholder="Kickoff Time e.g 18:30">
-
-<input id="tip" placeholder="Tip (Home Win / Over 2.5 etc)">
 <input id="odds" placeholder="Odds e.g 1.80">
 
-<button onclick="save()">Save Match</button>
+<button onclick="save()">Save Tip</button>
 </div>
 
 <div class="card">
-<h3>Existing Matches</h3>
+<h3>Matches Loaded</h3>
 <div id="list"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp({
   databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
@@ -47,49 +48,77 @@ const app = initializeApp({
 
 const db = getDatabase(app);
 
-const today=new Date().toISOString().split("T")[0];
+const today = new Date().toISOString().split("T")[0];
 
+let matches = {};
+
+// 🔥 LOAD MATCHES FROM FIREBASE
+async function loadMatches(){
+
+const snap = await get(ref(db, "matches/" + today));
+
+if(!snap.exists()) return;
+
+matches = snap.val();
+
+let selectHTML = "";
+
+Object.values(matches).forEach(m => {
+
+const key = (m.home + "_" + m.away).replaceAll(" ","_");
+
+selectHTML += `
+<option value="${key}">
+${m.home} vs ${m.away} (${m.time || "No time"})
+</option>
+`;
+
+});
+
+document.getElementById("matchSelect").innerHTML = selectHTML;
+
+loadList();
+}
+
+// 🔥 SAVE TIP
 async function save(){
 
-const home=document.getElementById("home").value;
-const away=document.getElementById("away").value;
-const status=document.getElementById("status").value;
-const time=document.getElementById("time").value;
-const tip=document.getElementById("tip").value;
-const odds=document.getElementById("odds").value;
+const key = document.getElementById("matchSelect").value;
+const tip = document.getElementById("tipSelect").value;
+const odds = document.getElementById("odds").value;
 
-const key=(home+"_"+away).replaceAll(" ","_");
+const m = matches[key];
 
-await set(ref(db,"matches/"+today+"/"+key),{
-home,away,status,time,score:"0-0"
+await set(ref(db, "tips/" + today + "/" + key), {
+home: m.home,
+away: m.away,
+tip: tip,
+odds: odds,
+status: m.status
 });
 
-await set(ref(db,"tips/"+today+"/"+key),{
-home,away,tip,odds,status
-});
-
-alert("Saved!");
-load();
+alert("Tip Saved!");
 }
 
-async function load(){
+// 🔥 DISPLAY LIST
+async function loadList(){
 
-const snap=await get(ref(db,"matches/"+today));
+const snap = await get(ref(db,"tips/"+today));
 
-let html="";
+let html = "";
 
 if(snap.exists()){
-const data=snap.val();
+const data = snap.val();
 
-Object.values(data).forEach(m=>{
-html+=`<p>${m.home} vs ${m.away} (${m.status})</p>`;
+Object.values(data).forEach(t=>{
+html += `<p>🔥 ${t.home} vs ${t.away} → ${t.tip}</p>`;
 });
 }
 
-document.getElementById("list").innerHTML=html;
+document.getElementById("list").innerHTML = html;
 }
 
-load();
+loadMat ches();
 </script>
 
 </body>
