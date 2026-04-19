@@ -6,7 +6,7 @@
 <style>
 body {
   font-family: Inter;
-  background: linear-gradient(135deg,#0f172a,#020617);
+  background: linear-gradient(135deg,#020617,#0f172a);
   color:white;
   padding:20px;
 }
@@ -15,11 +15,11 @@ body {
   background:#111827;
   padding:15px;
   border-radius:12px;
-  margin-top:15px;
-  box-shadow:0 0 20px rgba(0,255,200,0.1);
+  margin-bottom:15px;
+  box-shadow:0 0 15px rgba(0,255,200,0.1);
 }
 
-select,input,button {
+input,select,button {
   width:100%;
   padding:12px;
   margin-top:10px;
@@ -31,35 +31,39 @@ button {
   background:#00ffcc;
   font-weight:bold;
 }
-
-h2 {
-  text-align:center;
-}
 </style>
 </head>
 
 <body>
 
-<h2>⚙️ Admin Dashboard</h2>
+<h2>⚙️ FOHLA ADMIN</h2>
 
-<!-- VIP SECTION -->
+<!-- ADD MATCH -->
 <div class="card">
-<h3>💎 Add VIP User</h3>
+<h3>➕ Add Match</h3>
 
-<input id="vipPhone" placeholder="Enter phone number">
+<input id="home" placeholder="Home Team (e.g Liverpool)">
+<input id="away" placeholder="Away Team (e.g Arsenal)">
+<input id="time" placeholder="Time (e.g 18:30)">
 
-<button onclick="addVIP()">Activate VIP (7 Days)</button>
+<select id="status">
+<option value="TIMED">Not Started</option>
+<option value="IN_PLAY">Live</option>
+<option value="PAUSED">Half Time</option>
+<option value="FINISHED">Finished</option>
+</select>
 
-<p id="vipMsg"></p>
+<button onclick="addMatch()">Add Match</button>
 </div>
 
-<!-- MATCH + TIP -->
+<!-- ADD TIP -->
 <div class="card">
-<h3>⚽ Select Match</h3>
+<h3>🔥 Add Tip</h3>
 
-<select id="matchSelect"></select>
+<input id="tipHome" placeholder="Home Team">
+<input id="tipAway" placeholder="Away Team">
 
-<select id="tipSelect">
+<select id="tip">
 <option>Home Win</option>
 <option>Away Win</option>
 <option>Draw</option>
@@ -70,118 +74,92 @@ h2 {
 <option>BTTS NO</option>
 </select>
 
-<button onclick="saveTip()">Save Tip</button>
+<button onclick="addTip()">Save Tip</button>
 </div>
 
-<!-- VIEW -->
+<!-- VIP USERS -->
 <div class="card">
-<h3>🔥 Saved Tips</h3>
-<div id="list"></div>
+<h3>💎 Add VIP User</h3>
+
+<input id="vipPhone" placeholder="Phone (e.g 27655775885)">
+
+<button onclick="addVIP()">Activate VIP (7 days)</button>
+<p id="msg"></p>
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp({
-  databaseURL: "https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
+  databaseURL:"https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
 });
 
 const db = getDatabase(app);
 
-const today = new Date().toISOString().split("T")[0];
+const today=new Date().toISOString().split("T")[0];
 
-let matches = {};
+// ADD MATCH
+window.addMatch = async function(){
 
-// 🔥 ADD VIP USER
+const home = document.getElementById("home").value;
+const away = document.getElementById("away").value;
+const time = document.getElementById("time").value;
+const status = document.getElementById("status").value;
+
+if(!home || !away) return alert("Fill all fields");
+
+const key = (home+"_"+away).replaceAll(" ","_");
+
+await set(ref(db,"matches/"+today+"/"+key),{
+  home,
+  away,
+  time,
+  status,
+  score:"0-0"
+});
+
+alert("Match Added ✅");
+};
+
+// ADD TIP
+window.addTip = async function(){
+
+const home = document.getElementById("tipHome").value;
+const away = document.getElementById("tipAway").value;
+const tip = document.getElementById("tip").value;
+
+const key = (home+"_"+away).replaceAll(" ","_");
+
+await set(ref(db,"tips/"+today+"/"+key),{
+  home,
+  away,
+  tip
+});
+
+alert("Tip Saved 🔥");
+};
+
+// VIP
 window.addVIP = async function(){
 
 const phone = document.getElementById("vipPhone").value;
 
-if(!phone){
-document.getElementById("vipMsg").innerText="Enter phone ❌";
-return;
-}
+if(!phone) return;
 
-// expiry = 7 days
-const expiryDate = new Date();
-expiryDate.setDate(expiryDate.getDate()+7);
+const exp = new Date();
+exp.setDate(exp.getDate()+7);
 
 await set(ref(db,"users/"+phone),{
-vip:true,
-expiry: expiryDate.toISOString()
+  vip:true,
+  expiry:exp.toISOString()
 });
 
-document.getElementById("vipMsg").innerText="VIP ACTIVATED ✅";
+document.getElementById("msg").innerText="VIP Activated ✅";
 };
 
-// 🔥 LOAD MATCHES
-async function loadMatches(){
-
-const snap = await get(ref(db,"matches/"+today));
-
-if(!snap.exists()){
-document.getElementById("matchSelect").innerHTML="<option>No matches</option>";
-return;
-}
-
-matches = snap.val();
-
-let html="";
-
-Object.values(matches).forEach(m=>{
-
-const key=(m.home+"_"+m.away).replaceAll(" ","_");
-
-html += `<option value="${key}">
-${m.home} vs ${m.away} (${m.time || "No time"})
-</option>`;
-});
-
-document.getElementById("matchSelect").innerHTML = html;
-
-loadTips();
-}
-
-// 🔥 SAVE TIP
-window.saveTip = async function(){
-
-const key = document.getElementById("matchSelect").value;
-const tip = document.getElementById("tipSelect").value;
-
-const m = Object.values(matches).find(x =>
-(m.home+"_"+m.away).replaceAll(" ","_") === key
-);
-
-await set(ref(db,"tips/"+today+"/"+key),{
-home:m.home,
-away:m.away,
-tip:tip,
-status:m.status
-});
-
-alert("Tip Saved!");
-loadTips();
-};
-
-// 🔥 LOAD SAVED TIPS
-async function loadTips(){
-
-const snap = await get(ref(db,"tips/"+today));
-
-let html="";
-
-if(snap.exists()){
-Object.values(snap.val()).forEach(t=>{
-html += `<p>🔥 ${t.home} vs ${t.away} → ${t.tip}</p>`;
-});
-}
-
-document.getElementById("list").innerHTML = html;
-}
-
-loadMatches();
 </script>
 
 </body>
-  </html> 
+</html>
