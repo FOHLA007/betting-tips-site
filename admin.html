@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin Panel</title>
+<title>FOHLA ADMIN PRO</title>
 
 <style>
 body {
-  font-family: Inter;
-  background: linear-gradient(135deg,#020617,#0f172a);
+  font-family:Inter;
+  background:#020617;
   color:white;
   padding:20px;
 }
@@ -16,7 +16,6 @@ body {
   padding:15px;
   border-radius:12px;
   margin-bottom:15px;
-  box-shadow:0 0 15px rgba(0,255,200,0.1);
 }
 
 input,select,button {
@@ -31,20 +30,23 @@ button {
   background:#00ffcc;
   font-weight:bold;
 }
+
+.delete {
+  background:#ff4d4d;
+}
 </style>
 </head>
 
 <body>
 
-<h2>⚙️ FOHLA ADMIN</h2>
+<h2>⚙️ FOHLA ADMIN PRO</h2>
 
 <!-- ADD MATCH -->
 <div class="card">
 <h3>➕ Add Match</h3>
-
-<input id="home" placeholder="Home Team (e.g Liverpool)">
-<input id="away" placeholder="Away Team (e.g Arsenal)">
-<input id="time" placeholder="Time (e.g 18:30)">
+<input id="home" placeholder="Home Team">
+<input id="away" placeholder="Away Team">
+<input id="time" placeholder="Time (18:30)">
 
 <select id="status">
 <option value="TIMED">Not Started</option>
@@ -54,6 +56,23 @@ button {
 </select>
 
 <button onclick="addMatch()">Add Match</button>
+</div>
+
+<!-- UPDATE SCORE -->
+<div class="card">
+<h3>📊 Update Score</h3>
+
+<input id="uHome" placeholder="Home Team">
+<input id="uAway" placeholder="Away Team">
+<input id="score" placeholder="Score (2-1)">
+
+<select id="uStatus">
+<option value="IN_PLAY">Live</option>
+<option value="PAUSED">Half Time</option>
+<option value="FINISHED">Finished</option>
+</select>
+
+<button onclick="updateScore()">Update Match</button>
 </div>
 
 <!-- ADD TIP -->
@@ -67,9 +86,7 @@ button {
 <option>Home Win</option>
 <option>Away Win</option>
 <option>Draw</option>
-<option>Over 1.5</option>
 <option>Over 2.5</option>
-<option>Under 2.5</option>
 <option>BTTS YES</option>
 <option>BTTS NO</option>
 </select>
@@ -77,89 +94,139 @@ button {
 <button onclick="addTip()">Save Tip</button>
 </div>
 
-<!-- VIP USERS -->
+<!-- DELETE -->
 <div class="card">
-<h3>💎 Add VIP User</h3>
+<h3>❌ Delete</h3>
 
-<input id="vipPhone" placeholder="Phone (e.g 27655775885)">
+<input id="dHome" placeholder="Home Team">
+<input id="dAway" placeholder="Away Team">
 
-<button onclick="addVIP()">Activate VIP (7 days)</button>
-<p id="msg"></p>
+<button class="delete" onclick="deleteMatch()">Delete Match</button>
+<button class="delete" onclick="deleteTip()">Delete Tip</button>
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, remove, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const app = initializeApp({
   databaseURL:"https://bettingtips-9ea67-default-rtdb.firebaseio.com/"
 });
 
 const db = getDatabase(app);
-
 const today=new Date().toISOString().split("T")[0];
 
 // ADD MATCH
 window.addMatch = async function(){
+const home=homeInput("home");
+const away=homeInput("away");
+const time=homeInput("time");
+const status=document.getElementById("status").value;
 
-const home = document.getElementById("home").value;
-const away = document.getElementById("away").value;
-const time = document.getElementById("time").value;
-const status = document.getElementById("status").value;
-
-if(!home || !away) return alert("Fill all fields");
-
-const key = (home+"_"+away).replaceAll(" ","_");
+const key=keyGen(home,away);
 
 await set(ref(db,"matches/"+today+"/"+key),{
-  home,
-  away,
-  time,
-  status,
-  score:"0-0"
+home,away,time,status,score:"0-0"
 });
 
 alert("Match Added ✅");
 };
 
+// UPDATE SCORE
+window.updateScore = async function(){
+
+const home=homeInput("uHome");
+const away=homeInput("uAway");
+const score=document.getElementById("score").value;
+const status=document.getElementById("uStatus").value;
+
+const key=keyGen(home,away);
+
+await set(ref(db,"matches/"+today+"/"+key+"/score"),score);
+await set(ref(db,"matches/"+today+"/"+key+"/status"),status);
+
+// AUTO RESULT
+const tipSnap=await get(ref(db,"tips/"+today+"/"+key));
+
+if(tipSnap.exists() && status==="FINISHED"){
+
+const tipData=tipSnap.val();
+const result=calculateResult(score,tipData.tip);
+
+await set(ref(db,"tips/"+today+"/"+key+"/result"),result);
+}
+
+alert("Updated ✅");
+};
+
 // ADD TIP
 window.addTip = async function(){
 
-const home = document.getElementById("tipHome").value;
-const away = document.getElementById("tipAway").value;
-const tip = document.getElementById("tip").value;
+const home=homeInput("tipHome");
+const away=homeInput("tipAway");
+const tip=document.getElementById("tip").value;
 
-const key = (home+"_"+away).replaceAll(" ","_");
+const key=keyGen(home,away);
 
 await set(ref(db,"tips/"+today+"/"+key),{
-  home,
-  away,
-  tip
+home,away,tip
 });
 
 alert("Tip Saved 🔥");
 };
 
-// VIP
-window.addVIP = async function(){
+// DELETE MATCH
+window.deleteMatch = async function(){
 
-const phone = document.getElementById("vipPhone").value;
+const home=homeInput("dHome");
+const away=homeInput("dAway");
 
-if(!phone) return;
+const key=keyGen(home,away);
 
-const exp = new Date();
-exp.setDate(exp.getDate()+7);
+await remove(ref(db,"matches/"+today+"/"+key));
 
-await set(ref(db,"users/"+phone),{
-  vip:true,
-  expiry:exp.toISOString()
-});
-
-document.getElementById("msg").innerText="VIP Activated ✅";
+alert("Match Deleted ❌");
 };
+
+// DELETE TIP
+window.deleteTip = async function(){
+
+const home=homeInput("dHome");
+const away=homeInput("dAway");
+
+const key=keyGen(home,away);
+
+await remove(ref(db,"tips/"+today+"/"+key));
+
+alert("Tip Deleted ❌");
+};
+
+// HELPERS
+function keyGen(home,away){
+return (home+"_"+away).replaceAll(" ","_");
+}
+
+function homeInput(id){
+return document.getElementById(id).value.trim();
+}
+
+// RESULT LOGIC
+function calculateResult(score,tip){
+
+const [h,a]=score.split("-").map(Number);
+
+if(tip==="Home Win") return h>a ? "WON":"LOST";
+if(tip==="Away Win") return a>h ? "WON":"LOST";
+if(tip==="Draw") return h===a ? "WON":"LOST";
+if(tip==="Over 2.5") return (h+a)>2 ? "WON":"LOST";
+if(tip==="BTTS YES") return (h>0 && a>0) ? "WON":"LOST";
+if(tip==="BTTS NO") return (h===0 || a===0) ? "WON":"LOST";
+
+return "PENDING";
+}
 
 </script>
 
 </body>
-</html>
+</html> 
